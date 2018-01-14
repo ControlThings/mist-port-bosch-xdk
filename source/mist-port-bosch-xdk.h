@@ -77,13 +77,13 @@
  *   - 2 for DHCP IP application without callback,
  *   - 3 for deactivate
  **************************************************************************** */
-#define NCI_DHCP_MODE               (0)
+#define NCI_DHCP_MODE               (2)
 
 #define SCAN_INTERVAL           (5) /**< Macro for scan interval */
 
-#warning Please enter WLAN configurations with valid SSID & WPA key in below Macros and remove this line to avoid warnings.
-#define WLAN_CONNECT_WPA_SSID        "NETWORK_SSID"         /**< Macros to define WPA/WPA2 network settings */
-#define WLAN_CONNECT_WPA_PASS        "NETWORK_WPA_KEY"      /**< Macros to define WPA/WPA2 network settings */
+//#warning Please enter WLAN configurations with valid SSID & WPA key in below Macros and remove this line to avoid warnings.
+#define WLAN_CONNECT_WPA_SSID        "TP-LINK_FD2C"         /**< Macros to define WPA/WPA2 network settings */
+#define WLAN_CONNECT_WPA_PASS        "8B8sAi3Cm"      /**< Macros to define WPA/WPA2 network settings */
 
 /* local function prototype declarations */
 

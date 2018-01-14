@@ -73,6 +73,9 @@
 /* own header files */
 #include "mist-port-bosch-xdk.h"
 
+
+
+
 /* system header files */
 #include <stdio.h>
 
@@ -367,10 +370,10 @@ static void setAndGetIp(void)
     }
 #endif /* (TWO == NCI_DHCP_MODE) */
 
+#if 0
     /* ************************************************************************/
     /*   Disconnect
      **************************************************************************/
-
     static_assert((portTICK_RATE_MS != 0), "Tick rate MS is zero");
     vTaskDelay((portTickType) DELAY_5_SEC / portTICK_RATE_MS);
 
@@ -390,6 +393,7 @@ static void setAndGetIp(void)
     printf("[NCA] : ## User can configure the application by using : ##\n\r");
     printf("[NCA] : ##                  NCI_DHCP_MODE                ##\n\r");
     printf("[NCA] : ###################################################\n\r");
+#endif
 }
 
 /******************************************************************************/
@@ -471,6 +475,7 @@ static void ScanAndGetIp(void * param1, uint32_t param2)
     }
 }
 
+bool once = false;
 /**
  * @brief        This is a application timer callback function used to enqueue EnqueueScanwifiNetwork function
  *               to the command processor.
@@ -481,10 +486,13 @@ static void EnqueueScanwifiNetwork(void *pvParameters)
 {
     BCDS_UNUSED(pvParameters);
 
-    Retcode_T retVal = CmdProcessor_enqueue(AppCmdProcessorHandle, ScanAndGetIp, NULL, UINT32_C(0));
-    if (RETCODE_OK != retVal)
-    {
-        printf("Failed to Enqueue EnqueueScanwifiNetwork to Application Command Processor \r\n");
+    if (!once) {
+    	once = true;
+    	Retcode_T retVal = CmdProcessor_enqueue(AppCmdProcessorHandle, ScanAndGetIp, NULL, UINT32_C(0));
+		if (RETCODE_OK != retVal)
+		{
+			printf("Failed to Enqueue EnqueueScanwifiNetwork to Application Command Processor \r\n");
+		}
     }
 }
 
@@ -522,7 +530,47 @@ static void init(void)
     }
 }
 
+xTaskHandle Application_gdt; 
+/*
+ * @brief Application to print "hello world" on serial console.
+ */
+void mist_task_init(void * pvParameters)
+{
+#if 0
+	/*
+	 * Fill stack with nonsense
+	 */
+	size_t sz = 12*1024;
+	uint8_t buffer[sz];
+	memset(buffer, 255, sz);
+#endif
+
+   (void) pvParameters;
+    for (;;)
+    {
+        printf("Hello world, free heap: %i \r\n", xPortGetFreeHeapSize());
+        vTaskDelay((portTickType) 1000 / portTICK_RATE_MS);
+    }
+}
+
 /* global functions ********************************************************* */
+
+
+/**
+ * HEAP CONFIGURATION should be done in /opt/XDK-Workbench/SDK/xdk110/Common/config/FreeRTOSConfig.h
+ *
+ * configTOTAL_HEAP_SIZE
+ *
+ * 96 kbytes seems to be OK. The stack of the Mist task will be allocated from the heap.
+ */
+
+/**
+ * This calculates the stack size taking into account the width of the stack (seems to be uint16_t on XDK)
+ */
+#define CALC_STACKSIZE(kbytes) ((size_t) ((kbytes/(sizeof (portSTACK_TYPE))) * 1024 ))
+/** This sets the stack size of the Mist task, kbytes */
+#define MIST_TASK_STACKSIZE CALC_STACKSIZE(16) //kbytes
+
 
 /******************************************************************************/
 /**
@@ -546,6 +594,8 @@ void appInitSystem(void * CmdProcessorHandle, uint32_t param2)
     AppCmdProcessorHandle = (CmdProcessor_T *)CmdProcessorHandle;
     BCDS_UNUSED(param2);
     init();
+    
+    xTaskCreate(mist_task_init, (const char * const) "Mist task", MIST_TASK_STACKSIZE, NULL,1,&Application_gdt);
 }
 /**@} */
 /** ************************************************************************* */
