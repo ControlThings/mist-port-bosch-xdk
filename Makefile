@@ -18,11 +18,20 @@ export BCDS_APP_SOURCE_DIR = $(BCDS_APP_DIR)/source
 export BCDS_TARGET_BOARD = BSP_XDK110
 #List all the application header file under variable BCDS_XDK_INCLUDES
 export BCDS_XDK_INCLUDES = \
-	
+	-I $(BCDS_APP_SOURCE_DIR) \
+	-I $(BCDS_APP_SOURCE_DIR)/spiffs/src \
+
 #List all the application source file under variable BCDS_XDK_APP_SOURCE_FILES in a similar pattern as below
 export BCDS_XDK_APP_SOURCE_FILES = \
 	$(BCDS_APP_SOURCE_DIR)/Main.c \
-	$(BCDS_APP_SOURCE_DIR)/mist-port-bosch-xdk.c
+	$(BCDS_APP_SOURCE_DIR)/mist-port-bosch-xdk.c \
+	$(BCDS_APP_SOURCE_DIR)/my_tests.c \
+	$(BCDS_APP_SOURCE_DIR)/spiffs/src/spiffs_cache.c \
+	$(BCDS_APP_SOURCE_DIR)/spiffs/src/spiffs_check.c \
+	$(BCDS_APP_SOURCE_DIR)/spiffs/src/spiffs_gc.c \
+	$(BCDS_APP_SOURCE_DIR)/spiffs/src/spiffs_hydrogen.c \
+	$(BCDS_APP_SOURCE_DIR)/spiffs/src/spiffs_nucleus.c \
+	$(BCDS_APP_SOURCE_DIR)/spiffs_integration.c \
 
 .PHONY: clean	debug release flash_debug_bin flash_release_bin
 	

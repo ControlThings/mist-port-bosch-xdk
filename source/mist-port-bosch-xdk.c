@@ -89,6 +89,9 @@
 #include "FreeRTOS.h"
 #include "timers.h"
 
+#include "my_tests.h"
+#include "spiffs_integration.h"
+
 /* constant definitions ***************************************************** */
 
 /* local variables ********************************************************** */
@@ -530,7 +533,10 @@ static void init(void)
     }
 }
 
+
+
 xTaskHandle Application_gdt; 
+#include "BCDS_MCU_Flash.h"
 /*
  * @brief Application to print "hello world" on serial console.
  */
@@ -545,10 +551,13 @@ void mist_task_init(void * pvParameters)
 	memset(buffer, 255, sz);
 #endif
 
+	my_spiffs_mount();
+	my_spiffs_test();
    (void) pvParameters;
     for (;;)
     {
         printf("Hello world, free heap: %i \r\n", xPortGetFreeHeapSize());
+
         vTaskDelay((portTickType) 1000 / portTICK_RATE_MS);
     }
 }

@@ -20,7 +20,7 @@
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.bosch.cds.xdk.toolchain.targetplatform.1469877962" isAbstract="false" osList="all" superClass="com.bosch.cds.xdk.toolchain.targetplatform"/>
 							<builder buildPath="${workspace_loc:/mist-port-bosch-xdk}" id="com.bosch.cds.xdk.toolchain.builder.509924666" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="com.bosch.cds.xdk.toolchain.builder"/>
 							<tool id="com.bosch.cds.xdk.toolchain.c.16501066" name="BCDS C Compiler" superClass="com.bosch.cds.xdk.toolchain.c">
-								<option id="gnu.c.compiler.option.include.paths.140552496" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.140552496" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ARM_GCC}/arm-none-eabi/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ARM_GCC}/lib/gcc/arm-none-eabi/4.7.4/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ARM_GCC}/lib/gcc/arm-none-eabi/4.7.4/include-fixed&quot;"/>
@@ -61,8 +61,9 @@
 									<listOptionValue builtIn="false" value="&quot;${BCDS_BASE_DIR}/xdk110/Libraries/BLEStack/3rd-party/Alpwise/ALPW-BLESDKCM3/BLESW_CoreStack/Interfaces/ATT&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${BCDS_BASE_DIR}/xdk110/Libraries/EMlib/3rd-party/EMLib/usb/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${BCDS_BASE_DIR}/xdk110/Libraries/BLEStack/3rd-party/Alpwise/ALPW-BLESDKCM3/BLESW_ALPWDataExchange/Interfaces&quot;"/>
+									<listOptionValue builtIn="false" value="/home/jan/controlthings/bosch-xdk/mist-port-bosch-xdk/source"/>
 								</option>
-								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1534902717" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1534902717" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="SERVAL_POLICY_STACK_CALLS_TLS_API=1"/>
 									<listOptionValue builtIn="false" value="EscTls_CIPHER_SUITE=TLS_PSK_WITH_AES_128_CCM_8"/>
 									<listOptionValue builtIn="false" value="SERVAL_ENABLE_XUDP=1"/>
@@ -136,7 +137,7 @@
 									<listOptionValue builtIn="false" value="CYCURTLS_HAVE_GET_CURRENT_TASKNAME=0"/>
 									<listOptionValue builtIn="false" value="SERVAL_ENABLE_DTLS_SERVER=1"/>
 								</option>
-								<option id="gnu.c.compiler.option.preprocessor.undef.symbol.533832436" superClass="gnu.c.compiler.option.preprocessor.undef.symbol" valueType="undefDefinedSymbols">
+								<option id="gnu.c.compiler.option.preprocessor.undef.symbol.533832436" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol" valueType="undefDefinedSymbols">
 									<listOptionValue builtIn="false" value="__STDC__"/>
 									<listOptionValue builtIn="false" value="__INT64_MAX__"/>
 									<listOptionValue builtIn="false" value="__LDBL_HAS_QUIET_NAN__"/>
@@ -404,7 +405,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="SDK/xdk110/Apps" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="source/spiffs/docs|source/spiffs/py|source/spiffs/afltests|source/mist_port/main.c|SDK/xdk110/Apps" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
