@@ -550,13 +550,13 @@ void mist_task_init(void * pvParameters)
 	uint8_t buffer[sz];
 	memset(buffer, 255, sz);
 #endif
-
+	//my_spiffs_erase_area();
 	my_spiffs_mount();
 	my_spiffs_test();
    (void) pvParameters;
     for (;;)
     {
-        printf("Hello world, free heap: %i \r\n", xPortGetFreeHeapSize());
+        printf("Blaa1, Hello world, free heap: %i \r\n", xPortGetFreeHeapSize());
 
         vTaskDelay((portTickType) 1000 / portTICK_RATE_MS);
     }

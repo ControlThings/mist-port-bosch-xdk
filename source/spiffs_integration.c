@@ -48,10 +48,13 @@ static u8_t spiffs_work_buf[LOG_PAGE_SIZE*2];
 static u8_t spiffs_fds[32*4];
 static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE+32)*4];
 
+#define SPIFFS_FLASH_ADDR  0x000B7000
+#define SPIFFS_SIZE (64 * 1024)
+
 void my_spiffs_mount() {
 	spiffs_config cfg;
-	cfg.phys_size = 64 * 1024;
-	cfg.phys_addr = 0x000B6000; // start spiffs at start of "Reserved" segment, see XDK110 FreeRTOS guide, chapter 4.1
+	cfg.phys_size = SPIFFS_SIZE;
+	cfg.phys_addr = SPIFFS_FLASH_ADDR; // start spiffs at start of "Reserved" segment, see XDK110 FreeRTOS guide, chapter 4.1
 	cfg.phys_erase_block = MCU_Flash_GetPageSize(); // according to return value of
 	cfg.log_block_size = MCU_Flash_GetPageSize(); // let us not complicate things
 	cfg.log_page_size = LOG_PAGE_SIZE; // as we said
@@ -66,20 +69,53 @@ void my_spiffs_mount() {
 }
 
 void my_spiffs_test(void) {
-  char buf[12];
+	 // Surely, I've mounted spiffs before entering here
+  spiffs_file fd;
 
-  // Surely, I've mounted spiffs before entering here
+  size_t test_len = 1024;
+  uint8_t test_data[test_len];
+  memset(test_data, 0xa5, test_len);
 
-  spiffs_file fd = SPIFFS_open(&fs, "my_file", SPIFFS_CREAT | SPIFFS_TRUNC | SPIFFS_RDWR, 0);
+  uint8_t read_buf[test_len];
+  memset(read_buf, 0, test_len);
+
+  int32_t io_len = 0;
+  fd = SPIFFS_open(&fs, "my_file", SPIFFS_RDWR, 0);
+  io_len = SPIFFS_read(&fs, fd, read_buf, test_len);
+  if (io_len < 0) printf("errno %i\n", SPIFFS_errno(&fs));
+  SPIFFS_close(&fs, fd);
+  printf("Read %i bytes\n", io_len);
+
+  if (memcmp(test_data, read_buf, test_len) != 0) {
+	  printf("Buffers differ\n");
+  }
+  else {
+	  printf("Buffers are equal!\n");
+  }
+
+
+  fd = SPIFFS_open(&fs, "my_file", SPIFFS_CREAT | SPIFFS_RDWR, 0);
   if (fd < 0) {
 	  printf("open error %i\n", SPIFFS_errno(&fs));
   }
-  if (SPIFFS_write(&fs, fd, (u8_t *)"Hello SPIFFS", 13) < 0) printf("errno %i\n", SPIFFS_errno(&fs));
+  io_len = SPIFFS_write(&fs, fd, test_data, test_len);
+  if (io_len < 0) printf("errno %i\n", SPIFFS_errno(&fs));
+  printf("Wrote %i bytes\n", io_len);
   SPIFFS_close(&fs, fd);
 
   fd = SPIFFS_open(&fs, "my_file", SPIFFS_RDWR, 0);
-  if (SPIFFS_read(&fs, fd, (u8_t *)buf, 13) < 0) printf("errno %i\n", SPIFFS_errno(&fs));
+  io_len = SPIFFS_read(&fs, fd, test_data, test_len);
+  if (io_len < 0) printf("errno %i\n", SPIFFS_errno(&fs));
   SPIFFS_close(&fs, fd);
+  printf("Read %i bytes\n", io_len);
 
-  printf("--> %s <--\n", buf);
+}
+
+void my_spiffs_erase_area(void) {
+	if (my_spiffs_erase(SPIFFS_FLASH_ADDR, SPIFFS_SIZE) != SPIFFS_OK) {
+		printf("Erasing fails!\n");
+	}
+	else {
+		printf("Successful erase of %i bytes!\n", SPIFFS_SIZE);
+	}
 }

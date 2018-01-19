@@ -12,4 +12,6 @@ void my_spiffs_mount(void);
 
 void my_spiffs_test(void);
 
+void my_spiffs_erase_area(void);
+
 #endif /* SOURCE_SPIFFS_INTEGRATION_H_ */
