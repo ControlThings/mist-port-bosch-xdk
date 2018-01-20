@@ -7,14 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <string.h>
-
-#include <netdb.h> 
 #include <time.h>
 #include <fcntl.h>
 #include <errno.h>
 
+#include "socket.h"
 
 #include "wish_connection.h"
 #include "wish_connection_mgr.h"
@@ -22,11 +20,9 @@
 #include "wish_local_discovery.h"
 #include "wish_identity.h"
 
-#include "tcpip_adapter.h"
-#include "esp_wifi.h"
-#include "esp_system.h"
-
 #include "port_net.h"
+#include "BCDS_WlanConnect.h"
+#include "BCDS_NetworkConfig.h"
 
 wish_core_t core_inst;
 
@@ -51,12 +47,9 @@ void error(const char *msg)
 }
 
 void socket_set_nonblocking(int sockfd) {
-    int status = fcntl(sockfd, F_SETFL, fcntl(sockfd, F_GETFL, 0) | O_NONBLOCK);
-
-    if (status == -1){
-        perror("When setting socket to non-blocking mode");
-        exit(1);
-    }
+	 SlSockNonblocking_t enableOption;
+	 enableOption.NonblockingEnabled = 1;
+	 sl_SetSockOpt(sockfd,SL_SOL_SOCKET,SL_SO_NONBLOCKING, (_u8 *)&enableOption,sizeof(enableOption)); // Enable/disable nonblocking mode
 }
 
 
@@ -169,11 +162,14 @@ void setup_wish_server(wish_core_t* core) {
         perror("server socket creation");
         exit(1);
     }
+#if 0
     int option = 1;
     setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
+#endif
     socket_set_nonblocking(serverfd);
 
-    struct sockaddr_in server_addr;
+    //struct sockaddr_in server_addr;
+    SlSockAddrIn_t server_addr;
     memset(&server_addr, 0, sizeof (server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -207,7 +203,7 @@ void setup_wish_local_discovery(void) {
         WISHDEBUG(LOG_CRITICAL, "error: udp socket");
     }
 
-#if 1
+#if 0
     /* Set socketoption REUSEADDR on the UDP local discovery socket so
      * that we can have several programs listening on the one and same
      * local discovery port 9090 */
@@ -234,27 +230,15 @@ void setup_wish_local_discovery(void) {
         exit(1);
     }
 
-#ifdef WLD_SEND_UNICASTS_IN_AP_MODE
-    /* Set socket's broadcast enabled bit on only if we are in STA mode */
-    wifi_mode_t current_mode = WIFI_MODE_NULL;
-    ESP_ERROR_CHECK( esp_wifi_get_mode(&current_mode) );
-    /* Set socket's broadcast bit on only if we are in STA mode */
-    if (current_mode == WIFI_MODE_STA) { 
-        int broadcast = 1;
-        if (setsockopt(wld_bcast_sock, SOL_SOCKET, SO_BROADCAST, 
-                &broadcast, sizeof(broadcast))) {
-            error("set sock opt");
-        }
-    }
-#else 
+#if 0
     /* Set broadcast enabled bit ON */
     int broadcast = 1;
     if (setsockopt(wld_bcast_sock, SOL_SOCKET, SO_BROADCAST, 
             &broadcast, sizeof(broadcast))) {
         error("set sock opt");
     }
-#endif
 
+#endif
 
     struct sockaddr_in sockaddr_src;
     memset(&sockaddr_src, 0, sizeof (struct sockaddr_in));
@@ -313,39 +297,9 @@ int wish_send_advertizement(wish_core_t* core, uint8_t *ad_msg, size_t ad_len) {
     si_other.sin_family = AF_INET;
     si_other.sin_port = htons(LOCAL_DISCOVERY_UDP_PORT);
     
-#ifdef WLD_SEND_UNICASTS_IN_AP_MODE
-    /* Get the list of each associated APs, and at each iteration send wld message as unicast to that particular station. This improves reliability if you have stations that exhibit
-     * high packet loss (such as Samsung J5) */
-    wifi_mode_t current_mode = WIFI_MODE_NULL;
-    ESP_ERROR_CHECK( esp_wifi_get_mode(&current_mode) );
-    if (current_mode == WIFI_MODE_AP) {      
-        wifi_sta_list_t ap_sta_list;
-        esp_wifi_ap_get_sta_list(&ap_sta_list);
-        tcpip_adapter_sta_list_t tcpip_sta_list;
-        tcpip_adapter_get_sta_list(&ap_sta_list, &tcpip_sta_list);
-        
-        if (tcpip_sta_list.num > 0) {
-            static int i = 0;
-            ip4_addr_t sta_ip = tcpip_sta_list.sta[i].ip;
-            printf("Unicasting instead to %s, %i\n", ip4addr_ntoa(&sta_ip), i);
-            inet_aton(ip4addr_ntoa(&sta_ip), &si_other.sin_addr);
-            i++;
-            if (i >= tcpip_sta_list.num) {
-                i = 0;
-            }
-        }
-        else {
-            inet_aton("255.255.255.255", &si_other.sin_addr);
-        } 
-    }
-    else {
-        /* Fail safe: there are no associated stations, but broadcast something anyway */
-        inet_aton("255.255.255.255", &si_other.sin_addr);
-    }
-#else
     /* Form broadcast address */
     inet_aton("255.255.255.255", &si_other.sin_addr);
-#endif
+
     socklen_t addrlen = sizeof(struct sockaddr_in);
     
     if (sendto(wld_bcast_sock, ad_msg, ad_len, 0, 
@@ -377,31 +331,19 @@ int wish_send_advertizement(wish_core_t* core, uint8_t *ad_msg, size_t ad_len) {
  * @return Returns value 0 if all went well.
  */
 int wish_get_host_ip_str(wish_core_t* core, char* addr_str, size_t addr_str_len) {
-    tcpip_adapter_ip_info_t ip_info;
-    tcpip_adapter_if_t tcpip_if = TCPIP_ADAPTER_IF_STA;
-    
-    wifi_mode_t mode;
-    ESP_ERROR_CHECK(esp_wifi_get_mode(&mode));
-    switch (mode) {
-        case WIFI_MODE_STA:
-            tcpip_if = TCPIP_ADAPTER_IF_STA;
-            break;
-        case WIFI_MODE_AP:
-            tcpip_if = TCPIP_ADAPTER_IF_AP;
-            break;
-        case WIFI_MODE_APSTA:
-            WISHDEBUG(LOG_CRITICAL, "wifi mode APSTA not handled");
-            break;
-        case WIFI_MODE_NULL:
-            WISHDEBUG(LOG_CRITICAL, "wifi is not enabled.");
-            break;
-        default:
-            WISHDEBUG(LOG_CRITICAL, "wifi get mode fail");
-            break;
+
+	NetworkConfig_IpSettings_T myIpGet;
+	Retcode_T retStatus;
+	retStatus = NetworkConfig_GetIpSettings(&myIpGet);
+    if (RETCODE_OK == retStatus)
+    {
+        snprintf(addr_str, addr_str_len, "%u.%u.%u.%u", (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 3)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 2)),  (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 1)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 2)) );
+
     }
-    ESP_ERROR_CHECK(tcpip_adapter_get_ip_info(tcpip_if, &ip_info));
-    
-    snprintf(addr_str, addr_str_len, "%i.%i.%i.%i", ip4_addr1(&ip_info.ip), ip4_addr2(&ip_info.ip), ip4_addr3(&ip_info.ip), ip4_addr4(&ip_info.ip) );
+    else
+    {
+    	snprintf(addr_str, addr_str_len, "127.0.0.1");
+    }
     
     return 0;
 }
@@ -420,7 +362,8 @@ void wish_set_host_port(wish_core_t* core, uint16_t port) {
 int write_to_socket(void *sockfd_ptr, unsigned char* buffer, int len) {
     int retval = 0;
     int sockfd = *((int *) sockfd_ptr);
-    int n = write(sockfd,buffer,len);
+    //int n = write(sockfd,buffer,len);
+    int n = send(sockfd, buffer, len, 0);
     
     if (n < 0) {
          printf("ERROR writing to socket: %s", strerror(errno));

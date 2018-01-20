@@ -6,16 +6,50 @@
  */
 
 #include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+
+#include "socket.h" /* interface provided by TI Simplelink API */
+
+#include "wish_core.h"
+#include "wish_connection.h"
+#include "wish_connection_mgr.h"
+#include "wish_local_discovery.h"
+#include "wish_identity.h"
+#include "wish_event.h"
+#include "wish_port_config.h"
+#include "utlist.h"
+
+#include "port_platform.h"
+#include "port_net.h"
+#include "spiffs_integration.h"
+
+#if 0
+static void process_application_events(void) {
+    modbus_process_events();
+    process_button_events();
+}
+#endif
+
+
+int max_fd = 0;
+
+static void update_max_fd(int fd) {
+    if (fd >= max_fd) {
+        max_fd = fd + 1;
+    }
+}
 
 static bool listen_to_adverts = true;
 static bool as_server = true;
 static bool as_relay_client = true;
 
 void port_main(void) {
-    esp32_spiffs_mount();
-    //esp32_spiffs_test();
+	my_spiffs_mount();
     port_platform_deps();
 
+#if 0
     gpio_task_setup();
     while (1) {
         EventBits_t ev_bits = xEventGroupGetBits(wifi_event_group);
@@ -25,10 +59,11 @@ void port_main(void) {
         process_button_events();
         vTaskDelay( 1000 );
     }
-
+#endif
 
     /* Start initialising Wish core */
     wish_core_t *core = port_net_get_core();
+
 
     wish_core_init(core);
 
@@ -42,23 +77,12 @@ void port_main(void) {
         setup_wish_local_discovery();
     }
 
-    modbus_app_init();
-
-    mist_config_init();
-    mist_initted = true;
-
-
-    gpio_set_direction(GPIO_NUM_18, GPIO_MODE_OUTPUT);
-    gpio_set_direction(GPIO_NUM_5, GPIO_MODE_OUTPUT);
-    gpio_set_level(GPIO_NUM_18, false);
-    gpio_set_level(GPIO_NUM_5, false);
-
-    int level = 0;
+    //mist_initted = true;
 
     int wld_fd = get_wld_fd();
     int server_fd = get_server_fd();
 
-#if 1
+#if 0
     if (pdPASS != xTaskCreate(&vModbusTask, (const portCHAR *)"MODBUS", MODBUS_TASK_STACKSIZE,
             NULL, MODBUS_TASK_PRIORITY, NULL)) {
         printf("Modbus task creation error\n");
@@ -143,12 +167,14 @@ void port_main(void) {
 
                     if (FD_ISSET(relay->sockfd, &wfds)) {
                         int connect_error = 0;
+#if 0 //SOL_SOCKET, SO_ERROR is not available on the XDK
                         socklen_t connect_error_len = sizeof(connect_error);
                         if (getsockopt(relay->sockfd, SOL_SOCKET, SO_ERROR,
                                 &connect_error, &connect_error_len) == -1) {
                             perror("Unexepected getsockopt error");
                             exit(1);
                         }
+#endif
                         if (connect_error == 0) {
                             /* connect() succeeded, the connection is open */
                             //printf("Relay client connected\n");
@@ -238,12 +264,14 @@ void port_main(void) {
                      * normally we don't select for socket writability!)
                      * */
                     int connect_error = 0;
+#if 0 //SOL_SOCKET, SO_ERROR is not available on the XDK
                     socklen_t connect_error_len = sizeof(connect_error);
                     if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR,
                             &connect_error, &connect_error_len) == -1) {
                         perror("Unexepected getsockopt error");
                         exit(1);
                     }
+#endif
                     if (connect_error == 0) {
                         /* connect() succeeded, the connection is open
                          * */
@@ -322,7 +350,7 @@ void port_main(void) {
             timestamp = time(NULL);
             /* Perform periodic action 10s interval
              */
-            printf("System free heap: %i bytes.\n", esp_get_free_heap_size());
+            printf("System free heap: %i bytes.\n", xPortGetFreeHeapSize());
 
         }
 
@@ -344,12 +372,12 @@ void port_main(void) {
             /* 1-second periodic interval */
             periodic_timestamp = sec_cnt;
             wish_time_report_periodic(core);
-            mist_config_periodic();
+            //mist_config_periodic();
         }
 
-        process_application_events();
+        //process_application_events();
 
-    }s
+    }
 
 
 }

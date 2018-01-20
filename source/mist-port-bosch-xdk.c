@@ -161,6 +161,7 @@ void myDhcpIpCallbackFunc(NetworkConfig_IpStatus_T returnStatus)
 }
 #endif
 
+bool network_init = false;
 /******************************************************************************/
 /**
  * @brief        This function does the following :
@@ -366,6 +367,8 @@ static void setAndGetIp(void)
                 (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 2)),
                 (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 1)),
                 (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 0)));
+
+        network_init = true;
     }
     else
     {
@@ -536,7 +539,7 @@ static void init(void)
 
 
 xTaskHandle Application_gdt; 
-#include "BCDS_MCU_Flash.h"
+
 /*
  * @brief Application to print "hello world" on serial console.
  */
@@ -551,9 +554,11 @@ void mist_task_init(void * pvParameters)
 	memset(buffer, 255, sz);
 #endif
 	//my_spiffs_erase_area();
-	my_spiffs_mount();
-	my_spiffs_test();
-   (void) pvParameters;
+
+	while (!network_init);
+
+	port_main();
+	(void) pvParameters;
     for (;;)
     {
         printf("Blaa1, Hello world, free heap: %i \r\n", xPortGetFreeHeapSize());
@@ -578,7 +583,7 @@ void mist_task_init(void * pvParameters)
  */
 #define CALC_STACKSIZE(kbytes) ((size_t) ((kbytes/(sizeof (portSTACK_TYPE))) * 1024 ))
 /** This sets the stack size of the Mist task, kbytes */
-#define MIST_TASK_STACKSIZE CALC_STACKSIZE(16) //kbytes
+#define MIST_TASK_STACKSIZE CALC_STACKSIZE(12) //kbytes
 
 
 /******************************************************************************/
@@ -603,7 +608,7 @@ void appInitSystem(void * CmdProcessorHandle, uint32_t param2)
     AppCmdProcessorHandle = (CmdProcessor_T *)CmdProcessorHandle;
     BCDS_UNUSED(param2);
     init();
-    
+
     xTaskCreate(mist_task_init, (const char * const) "Mist task", MIST_TASK_STACKSIZE, NULL,1,&Application_gdt);
 }
 /**@} */

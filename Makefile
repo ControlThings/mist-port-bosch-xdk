@@ -20,6 +20,14 @@ export BCDS_TARGET_BOARD = BSP_XDK110
 export BCDS_XDK_INCLUDES = \
 	-I $(BCDS_APP_SOURCE_DIR) \
 	-I $(BCDS_APP_SOURCE_DIR)/spiffs/src \
+	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/src \
+	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/wish-rpc-c99/src \
+	-I $(BCDS_APP_SOURCE_DIR)/mist_port \
+	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/bson \
+	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/uthash/src \
+	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/ed25519/src \
+	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/mbedtls-2.1.2/include \
+	-I $(BCDS_APP_SOURCE_DIR)/mist-c99/wish_app \
 
 #List all the application source file under variable BCDS_XDK_APP_SOURCE_FILES in a similar pattern as below
 export BCDS_XDK_APP_SOURCE_FILES = \
@@ -32,6 +40,24 @@ export BCDS_XDK_APP_SOURCE_FILES = \
 	$(BCDS_APP_SOURCE_DIR)/spiffs/src/spiffs_hydrogen.c \
 	$(BCDS_APP_SOURCE_DIR)/spiffs/src/spiffs_nucleus.c \
 	$(BCDS_APP_SOURCE_DIR)/spiffs_integration.c \
+	$(BCDS_APP_SOURCE_DIR)/mist_port/port_main.c \
+	$(BCDS_APP_SOURCE_DIR)/mist_port/port_net.c \
+	$(BCDS_APP_SOURCE_DIR)/mist_port/port_platform.c \
+	$(BCDS_APP_SOURCE_DIR)/mist_port/relay_client.c \
+	$(BCDS_APP_SOURCE_DIR)/mist_port/faux_service_ipc.c \
+	$(BCDS_APP_SOURCE_DIR)/mist_port/event.c \
+	$(BCDS_APP_SOURCE_DIR)/mist_port/inet_aton.c \
+	
+SRC_DIRS = $(BCDS_APP_SOURCE_DIR)/wish-c99/src $(BCDS_APP_SOURCE_DIR)/mist-c99/src $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/bson \
+$(BCDS_APP_SOURCE_DIR)/wish-c99/deps/wish-rpc-c99/src $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/mbedtls-2.1.2/library \
+$(BCDS_APP_SOURCE_DIR)/wish-c99/deps/ed25519/src
+
+SRC_DIRS += $(BCDS_APP_SOURCE_DIR)/mist-c99/wish_app
+
+
+BCDS_XDK_APP_SOURCE_FILES += $(foreach sdir,$(SRC_DIRS),$(wildcard $(sdir)/*.c))
+
+export BCDS_CFLAGS_COMMON = -DWITHOUT_STRTOIMAX
 
 .PHONY: clean	debug release flash_debug_bin flash_release_bin
 	

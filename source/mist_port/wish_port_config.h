@@ -8,7 +8,7 @@
 
 /** This specifies the maximum number of simultaneous Wish connections
  * */
-#define WISH_PORT_CONTEXT_POOL_SZ   16
+#define WISH_PORT_CONTEXT_POOL_SZ   2
 
 /** If this is defined, include support for the App TCP server */
 //#define WITH_APP_TCP_SERVER

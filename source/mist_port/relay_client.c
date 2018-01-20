@@ -1,3 +1,5 @@
+#include "wish_relay_client.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -6,14 +8,14 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h> 
+#include "socket.h"
 #include <time.h>
 #include <errno.h>
 
 
-#include "wish_relay_client.h"
+
 #include "wish_connection.h"
+
 
 /* 193.65.54.131:40000 */
 
@@ -28,7 +30,8 @@ void socket_set_nonblocking(int sockfd);
 /* Function used by Wish to send data over the Relay control connection
  * */
 int relay_send(int relay_sockfd, unsigned char* buffer, int len) {
-    int n = write(relay_sockfd, buffer, len);
+    //int n = write(relay_sockfd, buffer, len);
+	int n = send(relay_sockfd, buffer, len, 0);
     printf("Wrote %i bytes to relay", n);
     if (n < 0) {
         perror("ERROR writing to relay");
@@ -78,7 +81,7 @@ void wish_relay_client_open(wish_core_t* core, wish_relay_client_t *relay,
             sizeof(relay_serv_addr)) == -1) {
         if (errno == EINPROGRESS) {
             printf("Started connecting to relay server\n");
-            relay->send = relay_send;
+            relay->sendXXX = relay_send;
         }
         else {
             perror("relay server connect()");

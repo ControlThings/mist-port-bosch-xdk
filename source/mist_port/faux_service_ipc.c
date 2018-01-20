@@ -10,8 +10,8 @@
 
 #include "wish_core.h"
 //#include "wish_app.h"
-#include "../components/mist/mist-c99/wish_app/wish_app.h"
-#include "../components/mist/mist-c99/wish_app/app_service_ipc.h"
+#include "wish_app.h"
+#include "app_service_ipc.h"
 #include "core_service_ipc.h"
 #include "bson_visit.h"
 #include "wish_debug.h"

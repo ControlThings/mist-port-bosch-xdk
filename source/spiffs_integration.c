@@ -119,3 +119,58 @@ void my_spiffs_erase_area(void) {
 		printf("Successful erase of %i bytes!\n", SPIFFS_SIZE);
 	}
 }
+
+/* These are the implementations of the wish_fs I/O operations */
+
+wish_file_t my_fs_open(const char *pathname) {
+    spiffs_file fd = 0;
+    fd = SPIFFS_open(&fs, pathname, SPIFFS_CREAT |  SPIFFS_RDWR, 0);
+    if (fd < 0) {
+        printf("Could not open file %s: error %d\n\r", pathname, SPIFFS_errno(&fs));
+    }
+    return fd;
+}
+
+int32_t my_fs_read(wish_file_t fd, void* buf, size_t count) {
+    int32_t ret = SPIFFS_read(&fs, fd, buf, count);
+    if (ret < 0) {
+        if (ret == SPIFFS_ERR_END_OF_OBJECT) {
+            //SPIFFS_HAL_DEBUG("EOF encountered?\n\r");
+            ret = 0;
+        }
+        else {
+            printf("read errno %d\n\r", SPIFFS_errno(&fs));
+        }
+    }
+    return ret;
+}
+
+int32_t my_fs_write(wish_file_t fd, const void *buf, size_t count) {
+    int32_t ret = SPIFFS_write(&fs, fd, (void *)buf, count);
+    if (ret < 0) {
+    	printf("write errno %d\n", SPIFFS_errno(&fs));
+    }
+    return ret;
+}
+
+wish_offset_t my_fs_lseek(wish_file_t fd, wish_offset_t offset, int whence) {
+    int32_t ret = SPIFFS_lseek(&fs, fd, offset, whence);
+    if (ret < 0) {
+    	printf("seek errno %d\n", SPIFFS_errno(&fs));
+    }
+    return ret;
+}
+
+int32_t my_fs_close(wish_file_t fd) {
+    int32_t ret = SPIFFS_close(&fs, fd);
+    return ret;
+}
+
+int32_t my_fs_rename(const char *oldpath, const char *newpath) {
+    return SPIFFS_rename(&fs, oldpath, newpath);
+}
+
+
+int32_t my_fs_remove(const char *path) {
+    return SPIFFS_remove(&fs, path);
+}

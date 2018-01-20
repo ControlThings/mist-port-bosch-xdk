@@ -405,7 +405,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="source/spiffs/docs|source/spiffs/py|source/spiffs/afltests|source/mist_port/main.c|SDK/xdk110/Apps" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry excluding="source/spiffs/docs|source/spiffs/py|source/spiffs/afltests|source/mist_port/main.c|SDK/xdk110/Apps" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
