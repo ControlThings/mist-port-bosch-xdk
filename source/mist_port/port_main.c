@@ -12,6 +12,8 @@
 
 #include "socket.h" /* interface provided by TI Simplelink API */
 #include "BCDS_NetworkConfig.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include "wish_core.h"
 #include "wish_connection.h"
@@ -349,9 +351,9 @@ void port_main(void) {
 
 
         static time_t timestamp = 0;
-        time_t sec_cnt = time(NULL);
-        if (time(NULL) > timestamp + 10) {
-            timestamp = time(NULL);
+        int sec_cnt =  (xTaskGetTickCount() / portTICK_RATE_MS) / 1000;
+        if (sec_cnt > timestamp + 10) {
+            timestamp = sec_cnt;
             /* Perform periodic action 10s interval
              */
             printf("System free heap: %i bytes.\n", xPortGetFreeHeapSize());
@@ -372,7 +374,7 @@ void port_main(void) {
         }
 
         static int periodic_timestamp = 0;
-        if (time(NULL) > periodic_timestamp) {
+        if (sec_cnt > periodic_timestamp) {
             /* 1-second periodic interval */
             periodic_timestamp = sec_cnt;
             wish_time_report_periodic(core);
