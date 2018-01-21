@@ -11,6 +11,7 @@
 #include <sys/types.h>
 
 #include "socket.h" /* interface provided by TI Simplelink API */
+#include "BCDS_NetworkConfig.h"
 
 #include "wish_core.h"
 #include "wish_connection.h"
@@ -166,25 +167,27 @@ void port_main(void) {
                 LL_FOREACH(core->relay_db, relay) {
 
                     if (FD_ISSET(relay->sockfd, &wfds)) {
-                        int connect_error = 0;
-#if 0 //SOL_SOCKET, SO_ERROR is not available on the XDK
-                        socklen_t connect_error_len = sizeof(connect_error);
-                        if (getsockopt(relay->sockfd, SOL_SOCKET, SO_ERROR,
-                                &connect_error, &connect_error_len) == -1) {
-                            perror("Unexepected getsockopt error");
-                            exit(1);
-                        }
-#endif
-                        if (connect_error == 0) {
+                    	/* On the XDK, we are to call connect again! */
+                    	struct sockaddr_in relay_serv_addr;
+                    	relay_serv_addr.sin_family = AF_INET;
+                    	relay_serv_addr.sin_addr.s_addr = htons(NetworkConfig_Ipv4Value(relay->ip.addr[0], relay->ip.addr[1], relay->ip.addr[2], relay->ip.addr[3]));
+                    	relay_serv_addr.sin_port = htons(relay->port);
+                        int connect_error =
+                        		connect(relay->sockfd, (struct sockaddr *) &relay_serv_addr, sizeof(relay_serv_addr));
+
+                        if (connect_error >= 0) {
                             /* connect() succeeded, the connection is open */
                             //printf("Relay client connected\n");
                             relay_ctrl_connected_cb(core, relay);
                             wish_relay_client_periodic(core, relay);
                         }
+                        else if (connect_error == SL_EALREADY) {
+                        	//just continue
+                        }
                         else {
                             /* connect fails. Note that perror() or the
                              * global errno is not valid now */
-                            printf("relay control connect() failed: %s\n", strerror(connect_error));
+                            printf("relay control connect() failed: %i\n", connect_error);
 
                             // FIXME only one relay context assumed!
                             relay_ctrl_connect_fail_cb(core, relay);
@@ -193,9 +196,10 @@ void port_main(void) {
                     }
 
                     if (FD_ISSET(relay->sockfd, &rfds)) {
+                    	printf("Reading is possible from relay.\n");
                         uint8_t byte;   /* That's right, we read just one
                             byte at a time! */
-                        int read_len = read(relay->sockfd, &byte, 1);
+                        int read_len = recv(relay->sockfd, &byte, 1, 0);
                         if (read_len > 0) {
                             wish_relay_client_feed(core, relay, &byte, 1);
                             wish_relay_client_periodic(core, relay);
@@ -237,7 +241,7 @@ void port_main(void) {
                     }
                     if (rb_free < 0) {
                         printf("Error getting ring buffer free sz\n");
-                        exit(1);
+                        //exit(1);
                     }
                     const size_t read_buf_len = rb_free;
                     uint8_t buffer[read_buf_len];
@@ -286,7 +290,7 @@ void port_main(void) {
                         }
                         else {
                             printf("There is somekind of state inconsistency\n");
-                            exit(1);
+                            //exit(1);
                         }
                     }
                     else {
@@ -309,7 +313,7 @@ void port_main(void) {
                     int newsockfd = accept(server_fd, NULL, NULL);
                     if (newsockfd < 0) {
                         perror("on accept");
-                        exit(1);
+                        //exit(1);
                     }
                     socket_set_nonblocking(newsockfd);
                     /* Start the wish core with null IDs.
@@ -340,7 +344,7 @@ void port_main(void) {
         }
         else {
             printf("select error!\n");
-            exit(0);
+            //exit(0);
         }
 
 

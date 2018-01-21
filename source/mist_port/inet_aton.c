@@ -126,6 +126,7 @@ inet_aton(const char *cp, struct in_addr *addr)
 
 	if (addr != NULL)
 		addr->s_addr = htonl(val);
+	//printf("inet_aton: %x %x\n", val, addr->s_addr);
 	return (1);
 }
 

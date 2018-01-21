@@ -43,7 +43,7 @@ wish_core_t* port_net_get_core(void) {
 void error(const char *msg)
 {
     perror(msg);
-    exit(0);
+    //exit(0);
 }
 
 void socket_set_nonblocking(int sockfd) {
@@ -80,8 +80,8 @@ int wish_open_connection(wish_core_t* core, wish_connection_t *ctx, wish_ip_addr
     //printf("should start connect\n");
     int *sockfd_ptr = malloc(sizeof(int));
     if (sockfd_ptr == NULL) {
-        printf("Malloc fail");
-        exit(1);
+        printf("Malloc fail\n");
+        //exit(1);
     }
     *(sockfd_ptr) = socket(AF_INET, SOCK_STREAM, 0);
     
@@ -89,7 +89,7 @@ int wish_open_connection(wish_core_t* core, wish_connection_t *ctx, wish_ip_addr
     
     int sockfd = *(sockfd_ptr);
     if (sockfd < 0) {
-        perror("ERROR opening socket");
+        perror("ERROR opening socket\n");
         return 1;
     }
     
@@ -159,8 +159,8 @@ int get_server_fd(void) {
 void setup_wish_server(wish_core_t* core) {
     serverfd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverfd < 0) {
-        perror("server socket creation");
-        exit(1);
+        perror("server socket creation\n");
+        //exit(1);
     }
 #if 0
     int option = 1;
@@ -176,8 +176,8 @@ void setup_wish_server(wish_core_t* core) {
     server_addr.sin_port = htons(wish_get_host_port(core));
     if (bind(serverfd, (struct sockaddr *) &server_addr, 
             sizeof(server_addr)) < 0) {
-        perror("ERROR on binding wish server socket");
-        exit(1);
+        perror("ERROR on binding wish server socket\n");
+        //exit(1);
     }
     int connection_backlog = 1;
     if (listen(serverfd, connection_backlog) < 0) {
@@ -227,7 +227,7 @@ void setup_wish_local_discovery(void) {
     wld_bcast_sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (wld_bcast_sock < 0) {
         perror("Could not create socket for broadcasting");
-        exit(1);
+        //exit(1);
     }
 
 #if 0

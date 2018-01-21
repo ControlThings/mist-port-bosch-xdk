@@ -1,4 +1,4 @@
-#include "wish_relay_client.h"
+
 
 #include <stddef.h>
 #include <stdint.h>
@@ -15,15 +15,10 @@
 
 
 #include "wish_connection.h"
+#include "wish_relay_client.h"
 
+#include "inet_aton.h"
 
-/* 193.65.54.131:40000 */
-
-#define RELAY_SERVER_IP0    193
-#define RELAY_SERVER_IP1    65
-#define RELAY_SERVER_IP2    54
-#define RELAY_SERVER_IP3    131
-#define RELAY_SERVER_PORT   40000
 
 void socket_set_nonblocking(int sockfd);
 
@@ -32,7 +27,7 @@ void socket_set_nonblocking(int sockfd);
 int relay_send(int relay_sockfd, unsigned char* buffer, int len) {
     //int n = write(relay_sockfd, buffer, len);
 	int n = send(relay_sockfd, buffer, len, 0);
-    printf("Wrote %i bytes to relay", n);
+    printf("Wrote %i bytes to relay\n", n);
     if (n < 0) {
         perror("ERROR writing to relay");
     }
@@ -77,17 +72,17 @@ void wish_relay_client_open(wish_core_t* core, wish_relay_client_t *relay,
     printf("Relay server ip is %s port %d\n", ip_str, relay->port);
     inet_aton(ip_str, &relay_serv_addr.sin_addr);
     relay_serv_addr.sin_port = htons(relay->port);
-    if (connect(relay->sockfd, (struct sockaddr *) &relay_serv_addr, 
-            sizeof(relay_serv_addr)) == -1) {
-        if (errno == EINPROGRESS) {
-            printf("Started connecting to relay server\n");
-            relay->sendXXX = relay_send;
-        }
-        else {
-            perror("relay server connect()");
-            relay->curr_state = WISH_RELAY_CLIENT_WAIT_RECONNECT;
-        }
-    }
+    int connect_ret = connect(relay->sockfd, (struct sockaddr *) &relay_serv_addr,
+            sizeof(relay_serv_addr));
+	if (connect_ret == SL_EALREADY) {
+		printf("Started connecting to relay server\n");
+		relay->sendXXX = relay_send;
+	}
+	else {
+		perror("relay server connect()");
+		relay->curr_state = WISH_RELAY_CLIENT_WAIT_RECONNECT;
+	}
+
 }
 
 void wish_relay_client_close(wish_core_t* core, wish_relay_client_t *relay) {
