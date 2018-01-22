@@ -23,6 +23,7 @@
 #include "port_net.h"
 #include "BCDS_WlanConnect.h"
 #include "BCDS_NetworkConfig.h"
+#include "inet_aton.h"
 
 wish_core_t core_inst;
 
@@ -108,24 +109,21 @@ int wish_open_connection(wish_core_t* core, wish_connection_t *ctx, wish_ip_addr
     inet_aton(ip_str, &serv_addr.sin_addr);
     serv_addr.sin_port = htons(port);
     int ret = connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr));
-    if (ret == -1) {
-        if (errno == EINPROGRESS) {
-            WISHDEBUG(LOG_DEBUG, "Connect now in progress");
-            ctx->curr_transport_state = TRANSPORT_STATE_CONNECTING;
-        }
-        else {
-            perror("Unhandled connect() errno");
-        }
-    }
-    else if (ret == 0) {
-        printf("Cool, connect succeeds immediately!\n");
-        if (ctx->via_relay) {
-            connected_cb_relay(ctx);
-        }
-        else {
-            connected_cb(ctx);
-        }
-    }
+    if (ret == SL_EALREADY) {
+		WISHDEBUG(LOG_DEBUG, "Connect now in progress");
+		ctx->curr_transport_state = TRANSPORT_STATE_CONNECTING;
+	} else if (ret == 0) {
+		printf("Cool, connect succeeds immediately!\n");
+		if (ctx->via_relay) {
+			connected_cb_relay(ctx);
+		} else {
+			connected_cb(ctx);
+		}
+	} else {
+		perror("Unhandled connect() errno");
+	}
+
+
     return 0;
 }
 
@@ -267,7 +265,7 @@ void read_wish_local_discovery(void) {
     }
 
     if (blen > 0) {
-        //printf("Received from %s:%hu\n\n",inet_ntoa(sockaddr_wld.sin_addr), ntohs(sockaddr_wld.sin_port));
+        //printf("Received %i bytes from port %i\n", blen, ntohs(sockaddr_wld.sin_port));
         union ip {
            uint32_t as_long;
            uint8_t as_bytes[4];

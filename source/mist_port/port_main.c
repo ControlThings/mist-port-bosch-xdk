@@ -3,6 +3,11 @@
  *
  *  Created on: Jan 14, 2018
  *      Author: jan
+ *
+ *
+ * References
+ * Simple link networking API: http://xdk.bosch-connectivity.com/xdk_docs/html/group__ti__networking.html
+ * TI Simple link API User's guide : http://www.ti.com/lit/ug/swru368a/swru368a.pdf
  */
 
 #include <stdbool.h>
@@ -160,6 +165,7 @@ void port_main(void) {
         if ( select_ret > 0 ) {
             //printf("there is a fd ready\n");
             if (FD_ISSET(wld_fd, &rfds)) {
+
                 read_wish_local_discovery();
             }
 
@@ -231,7 +237,7 @@ void port_main(void) {
                 }
                 int sockfd = *((int *)ctx->send_arg);
                 if (FD_ISSET(sockfd, &rfds)) {
-                    //printf("wish socket readable\n");
+                    printf("wish socket readable\n");
                     /* The Wish connection socket is now readable. Data
                      * can be read without blocking */
                     int rb_free = wish_core_get_rx_buffer_free(core, ctx);
@@ -247,9 +253,9 @@ void port_main(void) {
                     }
                     const size_t read_buf_len = rb_free;
                     uint8_t buffer[read_buf_len];
-                    int read_len = read(sockfd, buffer, read_buf_len);
+                    int read_len = recv(sockfd, buffer, read_buf_len, 0);
                     if (read_len > 0) {
-                        //printf("Read some data\n");
+                        printf("Read some data\n");
                         wish_core_feed(core, ctx, buffer, read_len);
                         struct wish_event ev = {
                             .event_type = WISH_EVENT_NEW_DATA,
@@ -313,6 +319,7 @@ void port_main(void) {
                 if (FD_ISSET(server_fd, &rfds)) {
                     printf("Detected incoming connection!\n");
                     int newsockfd = accept(server_fd, NULL, NULL);
+                    printf("accept returns %i\n", newsockfd);
                     if (newsockfd < 0) {
                         perror("on accept");
                         //exit(1);

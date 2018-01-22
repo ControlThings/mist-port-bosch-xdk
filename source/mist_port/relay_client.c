@@ -76,7 +76,7 @@ void wish_relay_client_open(wish_core_t* core, wish_relay_client_t *relay,
             sizeof(relay_serv_addr));
 	if (connect_ret == SL_EALREADY) {
 		printf("Started connecting to relay server\n");
-		relay->sendXXX = relay_send;
+		relay->send_fn = relay_send;
 	}
 	else {
 		perror("relay server connect()");
