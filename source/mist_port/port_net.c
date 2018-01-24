@@ -335,7 +335,7 @@ int wish_get_host_ip_str(wish_core_t* core, char* addr_str, size_t addr_str_len)
 	retStatus = NetworkConfig_GetIpSettings(&myIpGet);
     if (RETCODE_OK == retStatus)
     {
-        snprintf(addr_str, addr_str_len, "%u.%u.%u.%u", (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 3)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 2)),  (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 1)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 2)) );
+        snprintf(addr_str, addr_str_len, "%u.%u.%u.%u", (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 3)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 2)),  (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 1)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 0)) );
         printf("addr_str %s\n", addr_str);
     }
     else
