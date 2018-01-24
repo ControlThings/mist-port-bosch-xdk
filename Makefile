@@ -46,7 +46,7 @@ export BCDS_XDK_APP_SOURCE_FILES = \
 	$(BCDS_APP_SOURCE_DIR)/mist_port/port_net.c \
 	$(BCDS_APP_SOURCE_DIR)/mist_port/port_platform.c \
 	$(BCDS_APP_SOURCE_DIR)/mist_port/relay_client.c \
-	$(BCDS_APP_SOURCE_DIR)/mist_port/faux_service_ipc.c \
+	$(BCDS_APP_SOURCE_DIR)/mist_port/port_service_ipc.c \
 	$(BCDS_APP_SOURCE_DIR)/mist_port/event.c \
 	$(BCDS_APP_SOURCE_DIR)/mist_port/inet_aton.c \
 	$(BCDS_APP_SOURCE_DIR)/apps/mist_config/mist_config.c \

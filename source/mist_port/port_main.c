@@ -33,6 +33,7 @@
 #include "port_platform.h"
 #include "port_net.h"
 #include "spiffs_integration.h"
+#include "port_service_ipc.h"
 
 #if 0
 static void process_application_events(void) {
@@ -379,7 +380,7 @@ void port_main(void) {
             wish_time_report_periodic(core);
             //mist_config_periodic();
         }
-
+        port_service_ipc_task();
         //process_application_events();
 
     }
