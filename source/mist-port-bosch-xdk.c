@@ -554,7 +554,7 @@ void mist_task_init(void * pvParameters)
 	uint8_t buffer[sz];
 	memset(buffer, 255, sz);
 #endif
-	my_spiffs_erase_area();
+	//my_spiffs_erase_area();
 
 	while (!network_init) {
 		vTaskDelay((portTickType) 1000 / portTICK_RATE_MS);
@@ -581,7 +581,7 @@ void mist_task_init(void * pvParameters)
  */
 #define CALC_STACKSIZE(kbytes) ((size_t) ((kbytes/(sizeof (portSTACK_TYPE))) * 1024 ))
 /** This sets the stack size of the Mist task, kbytes */
-#define MIST_TASK_STACKSIZE CALC_STACKSIZE(12) //kbytes
+#define MIST_TASK_STACKSIZE CALC_STACKSIZE(40) //kbytes
 
 
 /******************************************************************************/

@@ -12,7 +12,8 @@
 #include <time.h>
 #include <errno.h>
 
-
+/* Un-define the macro 'send' defined in the SimpleLink-provided socket.h */
+#undef send
 
 #include "wish_connection.h"
 #include "wish_relay_client.h"
@@ -20,13 +21,13 @@
 #include "inet_aton.h"
 
 
+
 void socket_set_nonblocking(int sockfd);
 
 /* Function used by Wish to send data over the Relay control connection
  * */
 int relay_send(int relay_sockfd, unsigned char* buffer, int len) {
-    //int n = write(relay_sockfd, buffer, len);
-	int n = send(relay_sockfd, buffer, len, 0);
+	int n = sl_Send(relay_sockfd, buffer, len, 0);
     printf("Wrote %i bytes to relay\n", n);
     if (n < 0) {
         perror("ERROR writing to relay");
@@ -76,7 +77,7 @@ void wish_relay_client_open(wish_core_t* core, wish_relay_client_t *relay,
             sizeof(relay_serv_addr));
 	if (connect_ret == SL_EALREADY) {
 		printf("Started connecting to relay server\n");
-		relay->send_fn = relay_send;
+		relay->send = relay_send;
 	}
 	else {
 		perror("relay server connect()");
