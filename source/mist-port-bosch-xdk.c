@@ -545,6 +545,7 @@ xTaskHandle Application_gdt;
  */
 void mist_task_init(void * pvParameters)
 {
+	(void) pvParameters;
 #if 0
 	/*
 	 * Fill stack with nonsense
@@ -553,18 +554,15 @@ void mist_task_init(void * pvParameters)
 	uint8_t buffer[sz];
 	memset(buffer, 255, sz);
 #endif
-	//my_spiffs_erase_area();
+	my_spiffs_erase_area();
 
-	while (!network_init);
+	while (!network_init) {
+		vTaskDelay((portTickType) 1000 / portTICK_RATE_MS);
+	}
 
 	port_main();
-	(void) pvParameters;
-    for (;;)
-    {
-        printf("Blaa1, Hello world, free heap: %i \r\n", xPortGetFreeHeapSize());
 
-        vTaskDelay((portTickType) 1000 / portTICK_RATE_MS);
-    }
+
 }
 
 /* global functions ********************************************************* */

@@ -13,6 +13,8 @@
 #include <errno.h>
 
 #include "socket.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 #include "wish_connection.h"
 #include "wish_connection_mgr.h"
@@ -69,7 +71,7 @@ void connected_cb_relay(wish_connection_t *ctx) {
 void connect_fail_cb(wish_connection_t *ctx) {
     printf("Connect fail... \n");
     if (ctx->send_arg != NULL) {
-        int sockfd = *((int *)ctx->send_arg);
+        int sockfd = ((struct xdk_send_arg *)ctx->send_arg)->sock_fd;
         close(sockfd);
         free(ctx->send_arg);
     }
@@ -79,16 +81,16 @@ void connect_fail_cb(wish_connection_t *ctx) {
 int wish_open_connection(wish_core_t* core, wish_connection_t *ctx, wish_ip_addr_t *ip, uint16_t port, bool relaying) {
     ctx->core = core;
     //printf("should start connect\n");
-    int *sockfd_ptr = malloc(sizeof(int));
-    if (sockfd_ptr == NULL) {
+    struct xdk_send_arg *send_arg = malloc(sizeof(struct xdk_send_arg));
+    if (send_arg == NULL) {
         printf("Malloc fail\n");
         //exit(1);
     }
-    *(sockfd_ptr) = socket(AF_INET, SOCK_STREAM, 0);
+    send_arg->sock_fd = socket(AF_INET, SOCK_STREAM, 0);
     
 
     
-    int sockfd = *(sockfd_ptr);
+    int sockfd = send_arg->sock_fd;
     if (sockfd < 0) {
         perror("ERROR opening socket\n");
         return 1;
@@ -96,19 +98,17 @@ int wish_open_connection(wish_core_t* core, wish_connection_t *ctx, wish_ip_addr
     
     socket_set_nonblocking(sockfd);
 
-    wish_core_register_send(ctx->core, ctx, write_to_socket, sockfd_ptr);
+    wish_core_register_send(ctx->core, ctx, write_to_socket, send_arg);
 
-    //printf("Opening connection sockfd %i\n", sockfd);
+    printf("Opening connection sockfd %i\n", sockfd);
 
-
-    struct sockaddr_in serv_addr;
-    serv_addr.sin_family = AF_INET;
+    send_arg->remote_addr.sin_family = AF_INET;
     char ip_str[20];
     snprintf(ip_str, 20, "%d.%d.%d.%d", ip->addr[0], ip->addr[1], ip->addr[2], ip->addr[3]);
     WISHDEBUG(LOG_CRITICAL, "Remote ip is %s port %hu\n", ip_str, port);
-    inet_aton(ip_str, &serv_addr.sin_addr);
-    serv_addr.sin_port = htons(port);
-    int ret = connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr));
+    inet_aton(ip_str, &send_arg->remote_addr.sin_addr);
+    send_arg->remote_addr.sin_port = htons(port);
+    int ret = connect(sockfd,(struct sockaddr *) &send_arg->remote_addr, sizeof(struct sockaddr_in));
     if (ret == SL_EALREADY) {
 		WISHDEBUG(LOG_DEBUG, "Connect now in progress");
 		ctx->curr_transport_state = TRANSPORT_STATE_CONNECTING;
@@ -132,7 +132,7 @@ void wish_close_connection(wish_core_t* core, wish_connection_t *ctx) {
      * succeeds, we need to excplicitly call TCP_DISCONNECTED so that
      * clean-up will happen */
     ctx->context_state = WISH_CONTEXT_CLOSING;
-    int sockfd = *((int *)ctx->send_arg);
+    int sockfd = ((struct xdk_send_arg *)ctx->send_arg)->sock_fd;
     if (sockfd >= 0) {
         close(sockfd);
     }
@@ -329,14 +329,14 @@ int wish_send_advertizement(wish_core_t* core, uint8_t *ad_msg, size_t ad_len) {
  * @return Returns value 0 if all went well.
  */
 int wish_get_host_ip_str(wish_core_t* core, char* addr_str, size_t addr_str_len) {
-
+	printf("get host ip str\n");
 	NetworkConfig_IpSettings_T myIpGet;
 	Retcode_T retStatus;
 	retStatus = NetworkConfig_GetIpSettings(&myIpGet);
     if (RETCODE_OK == retStatus)
     {
         snprintf(addr_str, addr_str_len, "%u.%u.%u.%u", (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 3)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 2)),  (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 1)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 2)) );
-
+        printf("addr_str %s\n", addr_str);
     }
     else
     {
@@ -357,17 +357,21 @@ void wish_set_host_port(wish_core_t* core, uint16_t port) {
     core->wish_server_port = port;
 }
 
-int write_to_socket(void *sockfd_ptr, unsigned char* buffer, int len) {
+int write_to_socket(void *send_arg, unsigned char* buffer, int len) {
+	printf("at write_to_socket\n");
     int retval = 0;
-    int sockfd = *((int *) sockfd_ptr);
+    int sockfd = ((struct xdk_send_arg *) send_arg)->sock_fd;
     //int n = write(sockfd,buffer,len);
+    //vTaskDelay((portTickType) 100 / portTICK_RATE_MS);
+    taskYIELD();
+    printf("at write_to_socket, fd %i, buffer len = %i\n", sockfd, len);
     int n = send(sockfd, buffer, len, 0);
     
     if (n < 0) {
          printf("ERROR writing to socket: %s", strerror(errno));
          retval = 1;
     }
-
+    printf("Exit\n");
     return retval;
 }
 

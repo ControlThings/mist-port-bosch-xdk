@@ -28,6 +28,8 @@ export BCDS_XDK_INCLUDES = \
 	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/ed25519/src \
 	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/mbedtls-2.1.2/include \
 	-I $(BCDS_APP_SOURCE_DIR)/mist-c99/wish_app \
+	-I $(BCDS_APP_SOURCE_DIR)/mist-c99/src \
+	-I $(BCDS_APP_SOURCE_DIR)/apps/mist_config \
 
 #List all the application source file under variable BCDS_XDK_APP_SOURCE_FILES in a similar pattern as below
 export BCDS_XDK_APP_SOURCE_FILES = \
@@ -47,6 +49,7 @@ export BCDS_XDK_APP_SOURCE_FILES = \
 	$(BCDS_APP_SOURCE_DIR)/mist_port/faux_service_ipc.c \
 	$(BCDS_APP_SOURCE_DIR)/mist_port/event.c \
 	$(BCDS_APP_SOURCE_DIR)/mist_port/inet_aton.c \
+	$(BCDS_APP_SOURCE_DIR)/apps/mist_config/mist_config.c \
 	
 SRC_DIRS = $(BCDS_APP_SOURCE_DIR)/wish-c99/src $(BCDS_APP_SOURCE_DIR)/mist-c99/src $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/bson \
 $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/wish-rpc-c99/src $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/mbedtls-2.1.2/library \

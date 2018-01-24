@@ -19,6 +19,7 @@
 #include "BCDS_NetworkConfig.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "PAL_initialize_ih.h"
 
 #include "wish_core.h"
 #include "wish_connection.h"
@@ -57,6 +58,7 @@ void port_main(void) {
 	my_spiffs_mount();
     port_platform_deps();
 
+
 #if 0
     gpio_task_setup();
     while (1) {
@@ -90,12 +92,8 @@ void port_main(void) {
     int wld_fd = get_wld_fd();
     int server_fd = get_server_fd();
 
-#if 0
-    if (pdPASS != xTaskCreate(&vModbusTask, (const portCHAR *)"MODBUS", MODBUS_TASK_STACKSIZE,
-            NULL, MODBUS_TASK_PRIORITY, NULL)) {
-        printf("Modbus task creation error\n");
-    }
-#endif
+    mist_config_init();
+
     printf("Entering main loop!\n");
     while (true) {
         fd_set rfds;
@@ -143,7 +141,7 @@ void port_main(void) {
                 printf("context in state %i but send_arg is NULL\n", ctx->context_state);
                 continue;
             }
-            int sockfd = *((int *) ctx->send_arg);
+            int sockfd = ((struct xdk_send_arg *) ctx->send_arg)->sock_fd;
             if (ctx->curr_transport_state == TRANSPORT_STATE_CONNECTING) {
                 /* If the socket has currently a pending connect(), set
                  * the socket in the set of writable FDs so that we can
@@ -232,10 +230,10 @@ void port_main(void) {
                 if (ctx->context_state == WISH_CONTEXT_FREE) {
                     continue;
                 }
-                if ((int *) ctx->send_arg == NULL) {
+                if ((struct xdk_send_arg *) ctx->send_arg == NULL) {
                     continue;
                 }
-                int sockfd = *((int *)ctx->send_arg);
+                int sockfd = ((struct xdk_send_arg *)ctx->send_arg)->sock_fd;
                 if (FD_ISSET(sockfd, &rfds)) {
                     printf("wish socket readable\n");
                     /* The Wish connection socket is now readable. Data
@@ -275,16 +273,10 @@ void port_main(void) {
                      * means that a previous connect succeeded. (because
                      * normally we don't select for socket writability!)
                      * */
-                    int connect_error = 0;
-#if 0 //SOL_SOCKET, SO_ERROR is not available on the XDK
-                    socklen_t connect_error_len = sizeof(connect_error);
-                    if (getsockopt(sockfd, SOL_SOCKET, SO_ERROR,
-                            &connect_error, &connect_error_len) == -1) {
-                        perror("Unexepected getsockopt error");
-                        exit(1);
-                    }
-#endif
-                    if (connect_error == 0) {
+                	struct sockaddr_in *remote_addr = &((struct xdk_send_arg *)ctx->send_arg)->remote_addr;
+                    int connect_ret = connect(sockfd, (struct sockaddr *) remote_addr, sizeof(struct sockaddr_in));
+
+                    if (connect_ret >= 0) {
                         /* connect() succeeded, the connection is open
                          * */
                         if (ctx->curr_transport_state
@@ -304,8 +296,8 @@ void port_main(void) {
                     else {
                         /* connect fails. Note that perror() or the
                          * global errno is not valid now */
-                        printf("wish connection connect() failed: %s\n",
-                            strerror(connect_error));
+                        printf("wish connection connect() failed: %i\n",
+                            connect_ret);
                         connect_fail_cb(ctx);
                         close(sockfd);
                     }
@@ -336,10 +328,10 @@ void port_main(void) {
                         close(newsockfd);
                     }
                     else {
-                        int *fd_ptr = malloc(sizeof(int));
-                        *fd_ptr = newsockfd;
+                        struct xdk_send_arg* send_arg = malloc(sizeof(struct xdk_send_arg));
+                        send_arg->sock_fd = newsockfd;
                         /* New wish connection can be accepted */
-                        wish_core_register_send(core, ctx, write_to_socket, fd_ptr);
+                        wish_core_register_send(core, ctx, write_to_socket, send_arg);
                         wish_core_signal_tcp_event(core, ctx, TCP_CLIENT_CONNECTED);
                     }
                 }
