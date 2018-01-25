@@ -60,7 +60,7 @@ SRC_DIRS += $(BCDS_APP_SOURCE_DIR)/mist-c99/wish_app
 
 BCDS_XDK_APP_SOURCE_FILES += $(foreach sdir,$(SRC_DIRS),$(wildcard $(sdir)/*.c))
 
-export BCDS_CFLAGS_COMMON = -DWITHOUT_STRTOIMAX
+export BCDS_CFLAGS_COMMON = -DWITHOUT_STRTOIMAX -DMIST_RPC_REPLY_BUF_LEN=1400
 
 .PHONY: clean	debug release flash_debug_bin flash_release_bin
 	
