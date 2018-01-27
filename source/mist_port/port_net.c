@@ -128,11 +128,13 @@ int wish_open_connection(wish_core_t* core, wish_connection_t *ctx, wish_ip_addr
 }
 
 void wish_close_connection(wish_core_t* core, wish_connection_t *ctx) {
+
     /* Note that because we don't get a callback invocation when closing
      * succeeds, we need to excplicitly call TCP_DISCONNECTED so that
      * clean-up will happen */
     ctx->context_state = WISH_CONTEXT_CLOSING;
     int sockfd = ((struct xdk_send_arg *)ctx->send_arg)->sock_fd;
+    printf("Closing connection fd %i\n", sockfd);
     if (sockfd >= 0) {
         close(sockfd);
     }
@@ -329,14 +331,14 @@ int wish_send_advertizement(wish_core_t* core, uint8_t *ad_msg, size_t ad_len) {
  * @return Returns value 0 if all went well.
  */
 int wish_get_host_ip_str(wish_core_t* core, char* addr_str, size_t addr_str_len) {
-	printf("get host ip str\n");
+	//printf("get host ip str\n");
 	NetworkConfig_IpSettings_T myIpGet;
 	Retcode_T retStatus;
 	retStatus = NetworkConfig_GetIpSettings(&myIpGet);
     if (RETCODE_OK == retStatus)
     {
         snprintf(addr_str, addr_str_len, "%u.%u.%u.%u", (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 3)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 2)),  (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 1)), (unsigned int) (NetworkConfig_Ipv4Byte(myIpGet.ipV4, 0)) );
-        printf("addr_str %s\n", addr_str);
+        //printf("addr_str %s\n", addr_str);
     }
     else
     {
@@ -358,20 +360,17 @@ void wish_set_host_port(wish_core_t* core, uint16_t port) {
 }
 
 int write_to_socket(void *send_arg, unsigned char* buffer, int len) {
-	printf("at write_to_socket\n");
+	//printf("at write_to_socket\n");
     int retval = 0;
     int sockfd = ((struct xdk_send_arg *) send_arg)->sock_fd;
-    //int n = write(sockfd,buffer,len);
-    //vTaskDelay((portTickType) 100 / portTICK_RATE_MS);
-    taskYIELD();
-    printf("at write_to_socket, fd %i, buffer len = %i\n", sockfd, len);
+    //printf("at write_to_socket, fd %i, buffer len = %i\n", sockfd, len);
     int n = send(sockfd, buffer, len, 0);
     
     if (n < 0) {
          printf("ERROR writing to socket: %s", strerror(errno));
          retval = 1;
     }
-    printf("Exit\n");
+    //printf("Exit\n");
     return retval;
 }
 

@@ -159,6 +159,7 @@ void port_main(void) {
         tv.tv_sec = 0;
         tv.tv_usec = 100*1000;
         int select_ret = select( max_fd, &rfds, &wfds, NULL, &tv );
+        taskYIELD();
 
         /* Zero fds ready means we timed out */
         if ( select_ret > 0 ) {
@@ -203,7 +204,7 @@ void port_main(void) {
                     }
 
                     if (FD_ISSET(relay->sockfd, &rfds)) {
-                    	printf("Reading is possible from relay.\n");
+                    	//printf("Reading is possible from relay.\n");
                         uint8_t byte;   /* That's right, we read just one
                             byte at a time! */
                         int read_len = recv(relay->sockfd, &byte, 1, 0);
@@ -250,11 +251,14 @@ void port_main(void) {
                         printf("Error getting ring buffer free sz\n");
                         //exit(1);
                     }
-                    const size_t read_buf_len = rb_free;
+                    const size_t max_read = 512; //We must limit the reading, else recv (sl_Recv) can sometimes fail and return truely funky values (> 0 though)
+                    const size_t read_buf_len = rb_free > max_read?max_read:rb_free;
                     uint8_t buffer[read_buf_len];
+                    taskYIELD();
                     int read_len = recv(sockfd, buffer, read_buf_len, 0);
                     if (read_len > 0) {
-                        printf("Read some data\n");
+                        printf("Read some data, len = %i, requested = %i, fd = %i\n", read_len, read_buf_len, sockfd);
+
                         wish_core_feed(core, ctx, buffer, read_len);
                         struct wish_event ev = {
                             .event_type = WISH_EVENT_NEW_DATA,
@@ -262,7 +266,7 @@ void port_main(void) {
                         wish_message_processor_notify(&ev);
                     }
                     else if (read_len == 0) {
-                        printf("Connection closed?");
+                        printf("Connection closed, fd = %i\n", sockfd);
                         close(sockfd);
                         free(ctx->send_arg);
                         wish_core_signal_tcp_event(core, ctx, TCP_DISCONNECTED);

@@ -8,13 +8,13 @@
 
 /** This specifies the maximum number of simultaneous Wish connections
  * */
-#define WISH_PORT_CONTEXT_POOL_SZ   2
+#define WISH_PORT_CONTEXT_POOL_SZ   2 // "There are a total of eight regular (non-secured) sockets", and we reserve one for relay, refer to ch 6.7 http://www.ti.com/lit/ug/swru368a/swru368a.pdf
 
 /** If this is defined, include support for the App TCP server */
 //#define WITH_APP_TCP_SERVER
 
 /** This specifies the maximum number of simultaneous app requests to core */
-#define WISH_PORT_APP_RPC_POOL_SZ ( 60 )
+#define WISH_PORT_APP_RPC_POOL_SZ ( 10 )
 
 /** This specifies the maximum size of the buffer where some RPC handlers build the reply (1400) */
 #define WISH_PORT_RPC_BUFFER_SZ ( 1400 )
