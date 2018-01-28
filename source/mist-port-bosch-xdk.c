@@ -581,7 +581,7 @@ void mist_task_init(void * pvParameters)
  */
 #define CALC_STACKSIZE(kbytes) ((size_t) ((kbytes/(sizeof (portSTACK_TYPE))) * 1024 ))
 /** This sets the stack size of the Mist task, kbytes */
-#define MIST_TASK_STACKSIZE CALC_STACKSIZE(12) //kbytes
+#define MIST_TASK_STACKSIZE CALC_STACKSIZE(8) //kbytes
 
 
 /******************************************************************************/

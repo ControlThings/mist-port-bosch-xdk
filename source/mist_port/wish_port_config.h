@@ -8,7 +8,7 @@
 
 /** This specifies the maximum number of simultaneous Wish connections
  * */
-#define WISH_PORT_CONTEXT_POOL_SZ   2 // "There are a total of eight regular (non-secured) sockets", and we reserve one for relay, refer to ch 6.7 http://www.ti.com/lit/ug/swru368a/swru368a.pdf
+#define WISH_PORT_CONTEXT_POOL_SZ   7 // "There are a total of eight regular (non-secured) sockets", and we reserve one for relay, refer to ch 6.7 http://www.ti.com/lit/ug/swru368a/swru368a.pdf
 
 /** If this is defined, include support for the App TCP server */
 //#define WITH_APP_TCP_SERVER
