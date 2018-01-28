@@ -162,10 +162,7 @@ void setup_wish_server(wish_core_t* core) {
         perror("server socket creation\n");
         //exit(1);
     }
-#if 0
-    int option = 1;
-    setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
-#endif
+
     socket_set_nonblocking(serverfd);
 
     //struct sockaddr_in server_addr;
@@ -203,14 +200,6 @@ void setup_wish_local_discovery(void) {
         WISHDEBUG(LOG_CRITICAL, "error: udp socket");
     }
 
-#if 0
-    /* Set socketoption REUSEADDR on the UDP local discovery socket so
-     * that we can have several programs listening on the one and same
-     * local discovery port 9090 */
-    int option = 1;
-    setsockopt(wld_fd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
-#endif
-
     socket_set_nonblocking(wld_fd);
 
     /* Turn off packet aggregation to ensure that UDP packets are delivered one-by-one by the stack to app.
@@ -235,16 +224,6 @@ void setup_wish_local_discovery(void) {
         perror("Could not create socket for broadcasting");
         //exit(1);
     }
-
-#if 0
-    /* Set broadcast enabled bit ON */
-    int broadcast = 1;
-    if (setsockopt(wld_bcast_sock, SOL_SOCKET, SO_BROADCAST, 
-            &broadcast, sizeof(broadcast))) {
-        error("set sock opt");
-    }
-
-#endif
 
     struct sockaddr_in sockaddr_src;
     memset(&sockaddr_src, 0, sizeof (struct sockaddr_in));

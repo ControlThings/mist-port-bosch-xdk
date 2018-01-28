@@ -35,14 +35,6 @@
 #include "spiffs_integration.h"
 #include "port_service_ipc.h"
 
-#if 0
-static void process_application_events(void) {
-    modbus_process_events();
-    process_button_events();
-}
-#endif
-
-
 int max_fd = 0;
 
 static void update_max_fd(int fd) {
@@ -58,19 +50,6 @@ static bool as_relay_client = true;
 void port_main(void) {
 	my_spiffs_mount();
     port_platform_deps();
-
-
-#if 0
-    gpio_task_setup();
-    while (1) {
-        EventBits_t ev_bits = xEventGroupGetBits(wifi_event_group);
-        if (ev_bits & CONNECTED_BIT) {
-            break;
-        }
-        process_button_events();
-        vTaskDelay( 1000 );
-    }
-#endif
 
     /* Start initialising Wish core */
     wish_core_t *core = port_net_get_core();
