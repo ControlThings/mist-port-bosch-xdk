@@ -213,6 +213,12 @@ void setup_wish_local_discovery(void) {
 
     socket_set_nonblocking(wld_fd);
 
+    /* Turn off packet aggregation to ensure that UDP packets are delivered one-by-one by the stack to app.
+     * See chapter 6.8 http://www.ti.com/lit/ug/swru368a/swru368a.pdf
+     */
+    uint8_t RxAggrEnable = 0;
+    sl_NetCfgSet(SL_SET_HOST_RX_AGGR, 0, sizeof(RxAggrEnable), (_u8 *) &RxAggrEnable);
+
     memset((char *) &sockaddr_wld, 0, sizeof(struct sockaddr_in));
     sockaddr_wld.sin_family = AF_INET;
     sockaddr_wld.sin_port = htons(LOCAL_DISCOVERY_UDP_PORT);

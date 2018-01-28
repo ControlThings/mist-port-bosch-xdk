@@ -359,8 +359,9 @@ void port_main(void) {
         if (sec_cnt > timestamp + 10) {
             timestamp = sec_cnt;
             /* Perform periodic action 10s interval
+             * Note: define INCLUDE_uxTaskGetStackHighWaterMark to 1 in FreeRTOSConfig.h
              */
-            printf("System free heap: %i bytes.\n", xPortGetFreeHeapSize());
+            printf("Stack high water mark: %i, System free heap: %i bytes.\n",  uxTaskGetStackHighWaterMark( NULL ), xPortGetFreeHeapSize());
 
         }
 
