@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <malloc.h>
 
 #include "socket.h" /* interface provided by TI Simplelink API */
 #include "BCDS_NetworkConfig.h"
@@ -216,7 +217,6 @@ void port_main(void) {
                 }
                 int sockfd = ((struct xdk_send_arg *)ctx->send_arg)->sock_fd;
                 if (FD_ISSET(sockfd, &rfds)) {
-                    printf("wish socket readable\n");
                     /* The Wish connection socket is now readable. Data
                      * can be read without blocking */
                     int rb_free = wish_core_get_rx_buffer_free(core, ctx);
@@ -236,7 +236,7 @@ void port_main(void) {
                     taskYIELD();
                     int read_len = recv(sockfd, buffer, read_buf_len, 0);
                     if (read_len > 0) {
-                        printf("Read some data, len = %i, requested = %i, fd = %i\n", read_len, read_buf_len, sockfd);
+                        //printf("Read some data, len = %i, requested = %i, fd = %i\n", read_len, read_buf_len, sockfd);
 
                         wish_core_feed(core, ctx, buffer, read_len);
                         struct wish_event ev = {
@@ -295,7 +295,7 @@ void port_main(void) {
                 if (FD_ISSET(server_fd, &rfds)) {
                     printf("Detected incoming connection!\n");
                     int newsockfd = accept(server_fd, NULL, NULL);
-                    printf("accept returns %i\n", newsockfd);
+                    //printf("accept returns %i\n", newsockfd);
                     if (newsockfd < 0) {
                         perror("on accept");
                         //exit(1);
@@ -340,7 +340,10 @@ void port_main(void) {
             /* Perform periodic action 10s interval
              * Note: define INCLUDE_uxTaskGetStackHighWaterMark to 1 in FreeRTOSConfig.h
              */
-            printf("Stack high water mark: %i, System free heap: %i bytes.\n",  uxTaskGetStackHighWaterMark( NULL ), xPortGetFreeHeapSize());
+
+            struct mallinfo minfo = mallinfo();
+            printf("Stack high water mark (bytes): %i, System heap arena: %i fordblks %i uordblks %i size %i min ever %i\n",  uxTaskGetStackHighWaterMark( NULL ) * (sizeof (portSTACK_TYPE)),
+            		minfo.arena, minfo.fordblks, minfo.uordblks, xPortGetFreeHeapSize(),  xPortGetMinimumEverFreeHeapSize());;
 
         }
 

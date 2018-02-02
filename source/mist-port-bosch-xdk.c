@@ -560,6 +560,12 @@ void mist_task_init(void * pvParameters)
 		vTaskDelay((portTickType) 1000 / portTICK_RATE_MS);
 	}
 
+
+	volatile uint32_t i=0x01234567;
+	// return 0 for big endian, 1 for little endian.
+	printf("Test: %i\n", (*((uint8_t*)(&i))) == 0x67);
+
+
 	port_main();
 
 
@@ -581,7 +587,7 @@ void mist_task_init(void * pvParameters)
  */
 #define CALC_STACKSIZE(kbytes) ((size_t) ((kbytes/(sizeof (portSTACK_TYPE))) * 1024 ))
 /** This sets the stack size of the Mist task, kbytes */
-#define MIST_TASK_STACKSIZE CALC_STACKSIZE(12) //kbytes
+#define MIST_TASK_STACKSIZE CALC_STACKSIZE(10) //kbytes
 
 
 /******************************************************************************/
