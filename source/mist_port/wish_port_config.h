@@ -8,7 +8,7 @@
 
 /** This specifies the maximum number of simultaneous Wish connections
  * */
-#define WISH_PORT_CONTEXT_POOL_SZ   3 // "There are a total of eight regular (non-secured) sockets", and we reserve one for relay, refer to ch 6.7 http://www.ti.com/lit/ug/swru368a/swru368a.pdf
+#define WISH_PORT_CONTEXT_POOL_SZ   4 // "There are a total of eight regular (non-secured) sockets", and we reserve one for relay, refer to ch 6.7 http://www.ti.com/lit/ug/swru368a/swru368a.pdf
 
 /** If this is defined, include support for the App TCP server */
 //#define WITH_APP_TCP_SERVER
@@ -21,11 +21,11 @@
 
 /** This defines the maximum number of entries in the Wish local discovery table (4).
  * You should make sure that in the worst case any message will fit into WISH_PORT_RPC_BUFFFER_SZ  */
-#define WISH_LOCAL_DISCOVERY_MAX ( 4 ) /* wld.list: 64 local discoveries should fit in 16k RPC buffer size */
+#define WISH_LOCAL_DISCOVERY_MAX ( 8 ) /* wld.list: 64 local discoveries should fit in 16k RPC buffer size */
 
 /** This defines the maximum number of uids in database (max number of identities + contacts) (4) 
      You should make sure that in the worst case any message will fit into WISH_PORT_RPC_BUFFFER_SZ */
-#define WISH_PORT_MAX_UIDS ( 4 ) /* identity.list: 128 uid entries should fit into 16k RPC buffer */
+#define WISH_PORT_MAX_UIDS ( 8 ) /* identity.list: 128 uid entries should fit into 16k RPC buffer */
 
 /** The app is hard-coded to the core binary */
 #define WITH_APP_INTERNAL
