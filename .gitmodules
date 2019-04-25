@@ -1,3 +1,6 @@
 [submodule "source/spiffs"]
 	path = source/spiffs
 	url = https://github.com/pellepl/spiffs.git
+[submodule "source/wish-c99"]
+	path = source/wish-c99
+	url = git@github.com:ControlThings/wish-c99.git
