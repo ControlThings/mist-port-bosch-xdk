@@ -4,3 +4,6 @@
 [submodule "source/wish-c99"]
 	path = source/wish-c99
 	url = git@github.com:ControlThings/wish-c99.git
+[submodule "source/mist-c99"]
+	path = source/mist-c99
+	url = foremost.controlthings.fi:/ct/mist/mist-c99
