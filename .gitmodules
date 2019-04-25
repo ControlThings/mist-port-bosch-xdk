@@ -1,6 +1,3 @@
 [submodule "source/spiffs"]
 	path = source/spiffs
 	url = https://github.com/pellepl/spiffs.git
-[submodule "source/mist-c99"]
-	path = source/mist-c99
-	url = jan@foremost.controlthings.fi:/git/mist-c99
