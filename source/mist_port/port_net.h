@@ -35,7 +35,7 @@ extern "C" {
     int get_wld_fd(void);
     int get_server_fd(void);
     void setup_wish_server(wish_core_t* core);
-    int write_to_socket(void *send_arg, unsigned char* buffer, int len);
+    int write_to_socket(wish_connection_t* conn, unsigned char* buffer, int len);
     void socket_set_nonblocking(int sockfd);
 
     void read_wish_local_discovery(void);

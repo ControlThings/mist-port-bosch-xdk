@@ -349,10 +349,10 @@ void wish_set_host_port(wish_core_t* core, uint16_t port) {
     core->wish_server_port = port;
 }
 
-int write_to_socket(void *send_arg, unsigned char* buffer, int len) {
+int write_to_socket(wish_connection_t* conn, unsigned char* buffer, int len) {
 	//printf("at write_to_socket\n");
     int retval = 0;
-    int sockfd = ((struct xdk_send_arg *) send_arg)->sock_fd;
+    int sockfd = ((struct xdk_send_arg *) conn->send_arg)->sock_fd;
     //printf("at write_to_socket, fd %i, buffer len = %i\n", sockfd, len);
     int n = send(sockfd, buffer, len, 0);
     
