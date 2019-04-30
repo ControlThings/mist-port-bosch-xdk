@@ -26,7 +26,7 @@ export BCDS_XDK_INCLUDES = \
 	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/bson \
 	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/uthash/src \
 	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/ed25519/src \
-	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/mbedtls-2.1.2/include \
+	-I $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/mbedtls/include \
 	-I $(BCDS_APP_SOURCE_DIR)/mist-c99/wish_app \
 	-I $(BCDS_APP_SOURCE_DIR)/mist-c99/src \
 	-I $(BCDS_APP_SOURCE_DIR)/apps/mist_config \
@@ -52,7 +52,7 @@ export BCDS_XDK_APP_SOURCE_FILES = \
 	$(BCDS_APP_SOURCE_DIR)/apps/mist_config/mist_config.c \
 	
 SRC_DIRS = $(BCDS_APP_SOURCE_DIR)/wish-c99/src $(BCDS_APP_SOURCE_DIR)/mist-c99/src $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/bson \
-$(BCDS_APP_SOURCE_DIR)/wish-c99/deps/wish-rpc-c99/src $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/mbedtls-2.1.2/library \
+$(BCDS_APP_SOURCE_DIR)/wish-c99/deps/wish-rpc-c99/src $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/mbedtls/library \
 $(BCDS_APP_SOURCE_DIR)/wish-c99/deps/ed25519/src
 
 SRC_DIRS += $(BCDS_APP_SOURCE_DIR)/mist-c99/wish_app
@@ -60,7 +60,7 @@ SRC_DIRS += $(BCDS_APP_SOURCE_DIR)/mist-c99/wish_app
 
 BCDS_XDK_APP_SOURCE_FILES += $(foreach sdir,$(SRC_DIRS),$(wildcard $(sdir)/*.c))
 
-export BCDS_CFLAGS_COMMON = -DWITHOUT_STRTOIMAX -DMIST_RPC_REPLY_BUF_LEN=1400
+export BCDS_CFLAGS_COMMON = -DWITHOUT_STRTOIMAX -DMIST_RPC_REPLY_BUF_LEN=1400 -DMBEDTLS_CONFIG_FILE=\"mist_port/mbedtls_config.h\"
 
 .PHONY: clean	debug release flash_debug_bin flash_release_bin
 	

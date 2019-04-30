@@ -82,8 +82,8 @@
 #define SCAN_INTERVAL           (5) /**< Macro for scan interval */
 
 //#warning Please enter WLAN configurations with valid SSID & WPA key in below Macros and remove this line to avoid warnings.
-#define WLAN_CONNECT_WPA_SSID        "TP-LINK_FD2C"         /**< Macros to define WPA/WPA2 network settings */
-#define WLAN_CONNECT_WPA_PASS        "8B8sAi3Cm"      /**< Macros to define WPA/WPA2 network settings */
+#define WLAN_CONNECT_WPA_SSID        "4G-Gateway-B9C7"         /**< Macros to define WPA/WPA2 network settings */
+#define WLAN_CONNECT_WPA_PASS        "G598M6853B5"      /**< Macros to define WPA/WPA2 network settings */
 
 /* local function prototype declarations */
 

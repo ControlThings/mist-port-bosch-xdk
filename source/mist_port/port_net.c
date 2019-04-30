@@ -78,6 +78,11 @@ void connect_fail_cb(wish_connection_t *ctx) {
     wish_core_signal_tcp_event(ctx->core, ctx, TCP_DISCONNECTED);
 }
 
+int wish_open_connection_dns(wish_core_t* core, wish_connection_t* connection, char* host, uint16_t port, bool via_relay) {
+
+	return 0;
+}
+
 int wish_open_connection(wish_core_t* core, wish_connection_t *ctx, wish_ip_addr_t *ip, uint16_t port, bool relaying) {
     ctx->core = core;
     //printf("should start connect\n");

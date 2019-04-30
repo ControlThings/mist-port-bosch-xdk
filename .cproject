@@ -404,8 +404,9 @@
 							<tool id="com.bosch.cds.xdk.toolchain.tool1.1333544892" name="BCDS Create Flash Image" superClass="com.bosch.cds.xdk.toolchain.tool1"/>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="cdt.managedbuild.toolchain.gnu.mingw.base.2085283633.307366425" name="CMakeLists.txt" rcbsApplicability="disable" resourcePath="source/wish-c99/CMakeLists.txt" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="source/spiffs/docs|source/spiffs/py|source/spiffs/afltests|source/mist_port/main.c|SDK/xdk110/Apps" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="source/wish-c99/port|source/wish-c99/CMakeLists.txt|source/wish-c99/port/unix/app.c|source/spiffs/docs|source/spiffs/py|source/spiffs/afltests|source/mist_port/main.c|SDK/xdk110/Apps" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

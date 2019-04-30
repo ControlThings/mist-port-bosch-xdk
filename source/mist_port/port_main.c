@@ -35,6 +35,7 @@
 #include "port_net.h"
 #include "spiffs_integration.h"
 #include "port_service_ipc.h"
+#include "port_relay_client.h"
 
 int max_fd = 0;
 
@@ -98,16 +99,23 @@ void port_main(void) {
             wish_relay_client_t* relay;
 
             LL_FOREACH(core->relay_db, relay) {
-                if (relay->curr_state == WISH_RELAY_CLIENT_OPEN) {
-                    FD_SET(relay->sockfd, &wfds);
-                    update_max_fd(relay->sockfd);
+                if (relay->curr_state == WISH_RELAY_CLIENT_CONNECTING) {
+                	if (relay->sockfd != -1) {
+                		FD_SET(relay->sockfd, &wfds);
+                		update_max_fd(relay->sockfd);
+                	}
                 }
                 else if (relay->curr_state == WISH_RELAY_CLIENT_WAIT_RECONNECT) {
                     /* connect to relay server has failed or disconnected and we wait some time before retrying */
                 }
+                else if (relay->curr_state == WISH_RELAY_CLIENT_RESOLVING) {
+                	/* Don't do anything as the resolver is resolving. relay->sockfd is not valid as it has not yet been initted! */
+                }
                 else if (relay->curr_state != WISH_RELAY_CLIENT_INITIAL) {
-                    FD_SET(relay->sockfd, &rfds);
-                    update_max_fd(relay->sockfd);
+                    if (relay->sockfd != -1) {
+                    	FD_SET(relay->sockfd, &rfds);
+                    	update_max_fd(relay->sockfd);
+                    }
                 }
             }
         }
@@ -154,11 +162,14 @@ void port_main(void) {
 
                 LL_FOREACH(core->relay_db, relay) {
 
-                    if (FD_ISSET(relay->sockfd, &wfds)) {
+                    if (relay->curr_state ==  WISH_RELAY_CLIENT_CONNECTING && relay->sockfd != -1 && FD_ISSET(relay->sockfd, &wfds)) {
                     	/* On the XDK, we are to call connect again! */
+                    	wish_ip_addr_t* relay_ip = port_get_relay_ip();
+                    	 printf("relay connection sockfd id writable\n");
+
                     	struct sockaddr_in relay_serv_addr;
                     	relay_serv_addr.sin_family = AF_INET;
-                    	relay_serv_addr.sin_addr.s_addr = htons(NetworkConfig_Ipv4Value(relay->ip.addr[0], relay->ip.addr[1], relay->ip.addr[2], relay->ip.addr[3]));
+                    	relay_serv_addr.sin_addr.s_addr = htons(NetworkConfig_Ipv4Value(relay_ip->addr[0], relay_ip->addr[1], relay_ip->addr[2], relay_ip->addr[3]));
                     	relay_serv_addr.sin_port = htons(relay->port);
                         int connect_error =
                         		connect(relay->sockfd, (struct sockaddr *) &relay_serv_addr, sizeof(relay_serv_addr));
@@ -183,7 +194,13 @@ void port_main(void) {
                         }
                     }
 
-                    if (FD_ISSET(relay->sockfd, &rfds)) {
+                    else if (relay->curr_state == WISH_RELAY_CLIENT_WAIT_RECONNECT) {
+						/* connect to relay server has failed or disconnected and we wait some time before retrying  */
+					}
+					else if (relay->curr_state == WISH_RELAY_CLIENT_RESOLVING) {
+						/* Don't do anything as the resolver is resolving. relay->sockfd is not valid as it has not yet been initted! */
+					}
+					else if (relay->curr_state != WISH_RELAY_CLIENT_INITIAL && relay->sockfd != -1 && FD_ISSET(relay->sockfd, &rfds)) {
                     	//printf("Reading is possible from relay.\n");
                         uint8_t byte;   /* That's right, we read just one
                             byte at a time! */
