@@ -37,7 +37,10 @@
 #include "port_service_ipc.h"
 #include "port_relay_client.h"
 
-int max_fd = 0;
+#include "mist_config.h"
+#include "xdk_sensors.h"
+
+static int max_fd = 0;
 
 static void update_max_fd(int fd) {
     if (fd >= max_fd) {
@@ -75,6 +78,7 @@ void port_main(void) {
     int server_fd = get_server_fd();
 
     mist_config_init();
+    xdk_sensors_app_init();
 
     printf("Entering main loop!\n");
     while (true) {
@@ -357,11 +361,14 @@ void port_main(void) {
             /* Perform periodic action 10s interval
              * Note: define INCLUDE_uxTaskGetStackHighWaterMark to 1 in FreeRTOSConfig.h
              */
+            printf("(time...)\n");
 
+#if 0
             struct mallinfo minfo = mallinfo();
+
             printf("Stack high water mark (bytes): %i, System heap arena: %i fordblks %i uordblks %i size %i min ever %i\n",  uxTaskGetStackHighWaterMark( NULL ) * (sizeof (portSTACK_TYPE)),
             		minfo.arena, minfo.fordblks, minfo.uordblks, xPortGetFreeHeapSize(),  xPortGetMinimumEverFreeHeapSize());;
-
+#endif
         }
 
         while (1) {

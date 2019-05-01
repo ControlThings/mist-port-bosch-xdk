@@ -406,7 +406,7 @@
 					</folderInfo>
 					<fileInfo id="cdt.managedbuild.toolchain.gnu.mingw.base.2085283633.307366425" name="CMakeLists.txt" rcbsApplicability="disable" resourcePath="source/wish-c99/CMakeLists.txt" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="source/wish-c99/port|source/wish-c99/CMakeLists.txt|source/wish-c99/port/unix/app.c|source/spiffs/docs|source/spiffs/py|source/spiffs/afltests|source/mist_port/main.c|SDK/xdk110/Apps" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="SDK/xdk110/Apps|source/spiffs/py|source/spiffs/docs|source/wish-c99/CMakeLists.txt|source/wish-c99/port/unix/app.c|source/spiffs/afltests|source/mist_port/main.c|source/wish-c99/port" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
