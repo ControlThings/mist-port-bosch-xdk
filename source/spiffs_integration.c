@@ -5,8 +5,11 @@
  *      Author: jan
  *
  * Information on the spiffs used on the Mist Bosch XDK port:
- * -Filesystem is created in the "reserved" segment of the MCU flash, starting from addr 0x000B6000
- * -File system size is 64k
+ * -Filesystem is created in the "reserved" segment of the MCU flash, starting from address 0xFC000, which is the start addr of the last 16 k of the "reserved" section.
+ * -File system size is 16k
+ * => with these assumptions max binary size would be 880k.
+ *
+ * Refer to XDK110 FreeRTOS guide, chapter 4.1
  *
  */
 
@@ -48,13 +51,15 @@ static u8_t spiffs_work_buf[LOG_PAGE_SIZE*2];
 static u8_t spiffs_fds[32*4];
 static u8_t spiffs_cache_buf[(LOG_PAGE_SIZE+32)*4];
 
-#define SPIFFS_FLASH_ADDR  0x000B7000
-#define SPIFFS_SIZE (64 * 1024)
+/** Locate spiffs at end of "Reserved" segment, see XDK110 FreeRTOS guide, chapter 4.1 */
+#define SPIFFS_FLASH_ADDR 0xFC000 //Address of the last 16 kbytes of the 1MB flash => 1024*1024-16*1024
+
+#define SPIFFS_SIZE (16 * 1024)
 
 void my_spiffs_mount() {
 	spiffs_config cfg;
 	cfg.phys_size = SPIFFS_SIZE;
-	cfg.phys_addr = SPIFFS_FLASH_ADDR; // start spiffs at start of "Reserved" segment, see XDK110 FreeRTOS guide, chapter 4.1
+	cfg.phys_addr = SPIFFS_FLASH_ADDR;
 	cfg.phys_erase_block = MCU_Flash_GetPageSize(); // according to return value of
 	cfg.log_block_size = MCU_Flash_GetPageSize(); // let us not complicate things
 	cfg.log_page_size = LOG_PAGE_SIZE; // as we said
