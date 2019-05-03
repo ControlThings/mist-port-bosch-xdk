@@ -21,10 +21,11 @@
 #include "bson.h"
 #include "bson_visit.h"
 
+#include "XdkSensorHandle.h"
 #include "BCDS_Orientation.h"
 
 /* Sensor Handler for the Orientation Sensor */
-Orientation_HandlePtr_T xdkOrientationSensor_Handle;
+extern Orientation_HandlePtr_T xdkOrientationSensor_Handle;
 
 static enum mist_error sensor_read(mist_ep* ep, wish_protocol_peer_t* peer, int request_id);
 
@@ -61,18 +62,25 @@ static enum mist_error sensor_read(mist_ep* ep, wish_protocol_peer_t* peer, int 
 
     WISHDEBUG(LOG_CRITICAL, "in sensor_read");
     /* FIXME: should use full_epid in name comparisons */
-    if (ep == &orientation_heading_ep) {
+    if (ep == &orientation_ep) {
 
     	Orientation_EulerData_T eulerValueInDegree = { 0 };
-#if 0
+
     	Retcode_T returnEulerValue = Orientation_readEulerDegreeVal(&eulerValueInDegree);
     	if (RETCODE_SUCCESS == returnEulerValue) {
-
+    		bson_append_start_object(&bs, "data");
+			bson_append_double(&bs, "heading", eulerValueInDegree.heading);
+			bson_append_double(&bs, "roll", eulerValueInDegree.roll);
+			bson_append_double(&bs, "pitch", eulerValueInDegree.pitch);
+			bson_append_double(&bs, "yaw", eulerValueInDegree.yaw);
+			bson_append_finish_object(&bs);
     	}
-#endif
-    	bson_append_start_object(&bs, "data");
-        bson_append_double(&bs, "heading", eulerValueInDegree.heading);
-        bson_append_finish_object(&bs);
+    	else {
+    		mist_read_error(ep->model->mist_app, ep->id, request_id, returnEulerValue, "XDK api error Error");
+    		return MIST_NO_ERROR;
+    	}
+
+
     }
     else if (ep == &orientation_pitch_ep) {
         bson_append_string(&bs, "data", "1.0.1");
@@ -163,13 +171,14 @@ void xdk_sensors_app_init(void) {
     PORT_PRINTF("Commencing mist api init3\n");
     wish_app_connected(app, true);
 
-#if 0
     Retcode_T returnValue = RETCODE_FAILURE;
     returnValue = Orientation_init(xdkOrientationSensor_Handle);
     if ( RETCODE_SUCCESS != returnValue) {
-    	PORT_PRINTF("Could not init orientation virtual sensor\n");
+    	WISHDEBUG(LOG_CRITICAL, "orientation sensor init error %i", returnValue);
     }
-#endif
+    else {
+    	WISHDEBUG(LOG_CRITICAL, "orientation sensor init ok");
+    }
 
     PORT_PRINTF("exiting xdk_sensors_app_init");
 }
