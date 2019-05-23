@@ -50,6 +50,9 @@ static mist_ep environment_abs_hum_ep = {.id = "abs_hum", .label = "Absolute hum
 static mist_ep environment_temp_ep = {.id = "t", .label = "Temperature" , .unit = "°C", .type = MIST_TYPE_FLOAT, .read = sensor_read };
 static mist_ep environment_pres_ep = {.id = "p", .label = "Ambient pressure" , .unit ="kPa", .type = MIST_TYPE_INT, .read = sensor_read };
 
+static mist_ep test_ep = {.id = "test", .label = "Test" , .unit ="kPa", .type = MIST_TYPE_INT, .read = sensor_read };
+
+
 static enum mist_error sensor_read(mist_ep* ep, wish_protocol_peer_t* peer, int request_id) {
     size_t result_max_len = 256;
     uint8_t result[result_max_len];
@@ -148,10 +151,13 @@ void xdk_sensors_app_init(void) {
     mist_ep_add(&(mist_app->model), NULL, &mist_super_ep);
     mist_ep_add(&(mist_app->model), mist_super_ep.id, &mist_name_ep);
 
+#if 0
     mist_ep_add(&(mist_app->model), NULL, &accelerometer_ep);
     mist_ep_add(&(mist_app->model), accelerometer_ep.id, &accelerometer_x_ep);
     mist_ep_add(&(mist_app->model), accelerometer_ep.id, &accelerometer_y_ep);
     mist_ep_add(&(mist_app->model), accelerometer_ep.id, &accelerometer_z_ep);
+#endif
+
 
     mist_ep_add(&(mist_app->model), NULL, &orientation_ep);
     mist_ep_add(&(mist_app->model), orientation_ep.id, &orientation_heading_ep);
@@ -159,12 +165,14 @@ void xdk_sensors_app_init(void) {
     mist_ep_add(&(mist_app->model), orientation_ep.id, &orientation_pitch_ep);
     mist_ep_add(&(mist_app->model), orientation_ep.id, &orientation_yaw_ep);
 
+#if 0
     mist_ep_add(&(mist_app->model), NULL, &environment_ep);
 	mist_ep_add(&(mist_app->model), environment_ep.id, &environment_rh_ep);
 	mist_ep_add(&(mist_app->model), environment_ep.id, &environment_temp_ep);
 	mist_ep_add(&(mist_app->model), environment_ep.id, &environment_pres_ep);
 	mist_ep_add(&(mist_app->model), environment_ep.id, &environment_abs_hum_ep);
-
+#endif
+	//mist_ep_add(&(mist_app->model), NULL, &test_ep);
 
     app->ready = init_app;
      
