@@ -390,6 +390,7 @@ void port_main(void) {
             periodic_timestamp = sec_cnt;
             wish_time_report_periodic(core);
             //mist_config_periodic();
+            xdk_sensors_periodic();
         }
         port_service_ipc_task();
         //process_application_events();

@@ -39,10 +39,6 @@ static mist_ep accelerometer_y_ep = {.id = "y", .label = "Accelerometer y" , .un
 static mist_ep accelerometer_z_ep = {.id = "z", .label = "Accelerometer z" , .unit = "m/s²", .type = MIST_TYPE_FLOAT, .read = sensor_read };
 
 static mist_ep orientation_ep = {.id = "orientation", .label = "Orientation" , .type = MIST_TYPE_STRING, .read = sensor_read };
-static mist_ep orientation_heading_ep = {.id = "heading", .label = "Heading" , .unit = "°", .type = MIST_TYPE_FLOAT, .read = sensor_read };
-static mist_ep orientation_pitch_ep = {.id = "pitch", .label = "Pitch" , .unit = "°", .type = MIST_TYPE_FLOAT, .read = sensor_read };
-static mist_ep orientation_roll_ep = {.id = "roll", .label = "Roll" , .unit = "°", .type = MIST_TYPE_FLOAT, .read = sensor_read };
-static mist_ep orientation_yaw_ep = {.id = "yaw", .label = "Yaw" , .unit = "°", .type = MIST_TYPE_FLOAT, .read = sensor_read };
 
 static mist_ep environment_ep = {.id = "environment", .label = "Environment" , .type = MIST_TYPE_STRING, .read = sensor_read };
 static mist_ep environment_rh_ep = {.id = "rh", .label = "Relative humidity" , .unit = "%",.type = MIST_TYPE_INT, .read = sensor_read };
@@ -84,16 +80,6 @@ static enum mist_error sensor_read(mist_ep* ep, wish_protocol_peer_t* peer, int 
     	}
 
 
-    }
-    else if (ep == &orientation_pitch_ep) {
-        bson_append_string(&bs, "data", "1.0.1");
-    }
-    else if (ep == &orientation_roll_ep) {
-        bson_append_string(&bs, "data", "PORT_VERSION");
-    }
-    else if (ep == &orientation_yaw_ep) {
-        int32_t reltime = 0; //user_get_uptime_minutes();
-        bson_append_int(&bs, "data", reltime);
     }
     else if (ep == &mist_super_ep) {
         bson_append_string(&bs, "data", "");
@@ -160,10 +146,7 @@ void xdk_sensors_app_init(void) {
 
 
     mist_ep_add(&(mist_app->model), NULL, &orientation_ep);
-    mist_ep_add(&(mist_app->model), orientation_ep.id, &orientation_heading_ep);
-    mist_ep_add(&(mist_app->model), orientation_ep.id, &orientation_roll_ep);
-    mist_ep_add(&(mist_app->model), orientation_ep.id, &orientation_pitch_ep);
-    mist_ep_add(&(mist_app->model), orientation_ep.id, &orientation_yaw_ep);
+
 
 #if 0
     mist_ep_add(&(mist_app->model), NULL, &environment_ep);
@@ -189,4 +172,8 @@ void xdk_sensors_app_init(void) {
     }
 
     PORT_PRINTF("exiting xdk_sensors_app_init");
+}
+
+void xdk_sensors_periodic(void) {
+	mist_value_changed(mist_app, orientation_ep.id);
 }
