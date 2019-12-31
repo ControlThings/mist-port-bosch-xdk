@@ -12,8 +12,10 @@
     <persistedState key="aggregateWorkingSetId"/>
     <tags>topLevel</tags>
     <tags>shellMaximized</tags>
-    <children xsi:type="basic:PartSashContainer" xmi:id="_mT89cGvXEemgC60AyqtvlQ" selectedElement="_mT89cWvXEemgC60AyqtvlQ" horizontal="true">
-      <children xsi:type="advanced:PerspectiveStack" xmi:id="_mT89cWvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.ide.perspectivestack" containerData="7500" selectedElement="_mdtWYGvXEemgC60AyqtvlQ">
+    <children xsi:type="basic:PartSashContainer" xmi:id="_mT89cGvXEemgC60AyqtvlQ" selectedElement="_mT89cmvXEemgC60AyqtvlQ" horizontal="true">
+      <children xsi:type="advanced:PerspectiveStack" xmi:id="_mT89cWvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.ide.perspectivestack" visible="false" containerData="7500" selectedElement="_mdtWYGvXEemgC60AyqtvlQ">
+        <tags>Minimized</tags>
+        <tags>MinimizedByZoom</tags>
         <children xsi:type="advanced:Perspective" xmi:id="_mdtWYGvXEemgC60AyqtvlQ" elementId="com.bosch.cds.xdk.ui.perspective" selectedElement="_mdtWYWvXEemgC60AyqtvlQ" label="XDK" iconURI="platform:/plugin/com.bosch.cds.xdk.ui/icons/XDK-Icon_16.png">
           <persistedState key="persp.hiddenItems" value="persp.hideToolbarSC:print,persp.hideToolbarSC:org.eclipse.ui.edit.text.toggleShowSelectedElementOnly,persp.hideToolbarSC:org.eclipse.debug.ui.commands.RunToLine,persp.hideToolbarSC:org.eclipse.jdt.ui.actions.OpenProjectWizard,"/>
           <tags>persp.actionSet:org.eclipse.ui.cheatsheets.actionSet</tags>
@@ -24,10 +26,9 @@
           <tags>persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet</tags>
           <tags>persp.actionSet:org.eclipse.ui.actionSet.keyBindings</tags>
           <tags>persp.actionSet:org.eclipse.ui.actionSet.openFiles</tags>
-          <children xsi:type="basic:PartSashContainer" xmi:id="_mdtWYWvXEemgC60AyqtvlQ" selectedElement="_mdtWYmvXEemgC60AyqtvlQ" horizontal="true">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_mdtWYWvXEemgC60AyqtvlQ" selectedElement="_mdt9cmvXEemgC60AyqtvlQ" horizontal="true">
             <children xsi:type="basic:PartSashContainer" xmi:id="_mdtWYmvXEemgC60AyqtvlQ" containerData="3400" selectedElement="_mdtWY2vXEemgC60AyqtvlQ">
               <children xsi:type="basic:PartStack" xmi:id="_mdtWY2vXEemgC60AyqtvlQ" elementId="com.bosch.cds.xdk.ui.DeviceViewMStack" containerData="2000" selectedElement="_mdtWZGvXEemgC60AyqtvlQ">
-                <tags>active</tags>
                 <children xsi:type="advanced:Placeholder" xmi:id="_mdtWZGvXEemgC60AyqtvlQ" elementId="com.bosch.cds.xdk.ui.DeviceView" ref="_mdjlYGvXEemgC60AyqtvlQ"/>
               </children>
               <children xsi:type="basic:PartStack" xmi:id="_mdt9cGvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.navigator.ProjectExplorerMStack" containerData="8000" selectedElement="_mdt9cWvXEemgC60AyqtvlQ">
@@ -45,9 +46,11 @@
           </children>
         </children>
       </children>
-      <children xsi:type="basic:PartStack" xmi:id="_mT89cmvXEemgC60AyqtvlQ" elementId="stickyFolderRight" toBeRendered="false" containerData="2500">
+      <children xsi:type="basic:PartStack" xmi:id="_mT89cmvXEemgC60AyqtvlQ" elementId="stickyFolderRight" containerData="2500" selectedElement="_mT89dGvXEemgC60AyqtvlQ">
+        <tags>active</tags>
+        <tags>Maximized</tags>
         <children xsi:type="advanced:Placeholder" xmi:id="_mT89c2vXEemgC60AyqtvlQ" elementId="org.eclipse.help.ui.HelpView" toBeRendered="false" ref="_mT7IQGvXEemgC60AyqtvlQ"/>
-        <children xsi:type="advanced:Placeholder" xmi:id="_mT89dGvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.internal.introview" toBeRendered="false" ref="_mT7vUGvXEemgC60AyqtvlQ"/>
+        <children xsi:type="advanced:Placeholder" xmi:id="_mT89dGvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.internal.introview" ref="_mT7vUGvXEemgC60AyqtvlQ"/>
         <children xsi:type="advanced:Placeholder" xmi:id="_mT89dWvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.cheatsheets.views.CheatSheetView" toBeRendered="false" ref="_mT8WYGvXEemgC60AyqtvlQ"/>
       </children>
     </children>
@@ -64,11 +67,12 @@
       <tags>View</tags>
       <tags>categoryTag:General</tags>
       <tags>activeOnClose</tags>
+      <tags>active</tags>
       <menus xmi:id="_mwM0kGvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.internal.introview">
         <tags>ViewMenu</tags>
         <tags>menuContribution:menu</tags>
       </menus>
-      <toolbar xmi:id="_mwM0kWvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.internal.introview" visible="false"/>
+      <toolbar xmi:id="_mwM0kWvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.internal.introview"/>
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_mT8WYGvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.cheatsheets.views.CheatSheetView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Cheat Sheets" iconURI="platform:/plugin/org.eclipse.ui.cheatsheets/icons/view16/cheatsheet_view.gif" tooltip="" closeable="true">
       <persistedState key="originalCompatibilityViewClass" value="org.eclipse.ui.internal.cheatsheets.views.CheatSheetView"/>
@@ -100,8 +104,6 @@
       <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;view/>"/>
       <tags>View</tags>
       <tags>categoryTag:Other</tags>
-      <tags>active</tags>
-      <tags>activeOnClose</tags>
       <menus xmi:id="_mfT44GvXEemgC60AyqtvlQ" elementId="com.bosch.cds.xdk.ui.DeviceView">
         <tags>ViewMenu</tags>
         <tags>menuContribution:menu</tags>
@@ -139,7 +141,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_mV-WsGvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.workbench.file">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_ZmbmQGy5EemrwPdGz8Z7fg" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_mAICkGvXEemgC60AyqtvlQ"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_hMKE0CwUEeqFtu7jzrVowQ" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_mAICkGvXEemgC60AyqtvlQ"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_mV-9wGvXEemgC60AyqtvlQ" elementId="additions" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -157,7 +159,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_mV-9xGvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.workbench.navigate">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_Zmf3sGy5EemrwPdGz8Z7fg" elementId="org.eclipse.ui.window.pinEditor" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_mAGNd2vXEemgC60AyqtvlQ"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_hMO9UCwUEeqFtu7jzrVowQ" elementId="org.eclipse.ui.window.pinEditor" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_mAGNd2vXEemgC60AyqtvlQ"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_mV_k0GvXEemgC60AyqtvlQ" elementId="group.editor" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -191,8 +193,8 @@
         <tags>Draggable</tags>
       </children>
     </trimBars>
-    <trimBars xmi:id="_l_X0lWvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.trim.vertical1" contributorURI="platform:/plugin/org.eclipse.ui.workbench" toBeRendered="false" side="Left">
-      <children xsi:type="menu:ToolControl" xmi:id="_neSCkGvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.ide.perspectivestack(minimized)" toBeRendered="false" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
+    <trimBars xmi:id="_l_X0lWvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.trim.vertical1" contributorURI="platform:/plugin/org.eclipse.ui.workbench" side="Left">
+      <children xsi:type="menu:ToolControl" xmi:id="_neSCkGvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.ide.perspectivestack(minimized)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
         <persistedState key="XSize" value="1322"/>
         <persistedState key="YSize" value="820"/>
         <tags>TrimStack</tags>
@@ -1962,7 +1964,7 @@
   <addons xmi:id="_l_X0pGvXEemgC60AyqtvlQ" elementId="MinMax Addon" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.MinMaxAddon"/>
   <addons xmi:id="_l_X0pWvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.workbench.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_l_iMoGvXEemgC60AyqtvlQ" elementId="SplitterAddon" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.splitteraddon.SplitterAddon"/>
-  <addons xmi:id="_ZTSAwWy5EemrwPdGz8Z7fg" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
+  <addons xmi:id="_g5zJgSwUEeqFtu7jzrVowQ" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
   <addons xmi:id="_dz0JgGOlEeSMMaPQU2nlzw" elementId="org.eclipse.ui.ide.application.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide.application" contributionURI="bundleclass://org.eclipse.ui.ide.application/org.eclipse.ui.internal.ide.application.addons.ModelCleanupAddon"/>
   <categories xmi:id="_l_-4kGvXEemgC60AyqtvlQ" elementId="org.eclipse.team.ui.category.team" name="Team" description="Actions that apply when working with a Team"/>
   <categories xmi:id="_l_-4kWvXEemgC60AyqtvlQ" elementId="org.eclipse.ui.category.views" name="Views" description="Commands for opening views"/>
