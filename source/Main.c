@@ -59,10 +59,6 @@ static CmdProcessor_T MainCmdProcessor;
 
 /* functions */
 
-void vApplicationIdleHook	(	void 		) {
-
-}
-
 int main(void)
 {
     /* Mapping Default Error Handling function */
